@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kimppakyytipalvelu</title>
+    <link rel="stylesheet" href="loginPage.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200;400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+        <div class="loginPage">
+            <h2>Kirjaudu kimppakyytipalveluun</h2>
+            <form id="loginForm">
+                <p>Käyttäjänimi:</p>
+                <input type="text" placeholder="Enter Username" id="userName" name="username" required><br>
+                <p>Salasana:</p>
+                <input type="password" placeholder="Enter Password" id="password" name="password" required><br>
+                <button id="loginBtn" type="submit">Login</button>
+            </form>
+            <a href="#" id="registrationLink">Rekisteröidy</a>
+            <form id="registrationForm" style="display: none;">
+                <h3>Rekisteröityminen</h3>
+                <p>Anna käyttäjänimi:</p>
+                <input type="text" placeholder="Käyttäjänimi" id="newUser" name="newUser" required><br>
+                <p>Anna sähköpostiosoite:</p>
+                <input type="email" placeholder="Sähköposti" id="newEmail" name="newEmail" required><br>
+                <p>Anna salasana:</p>
+                <input type="password" placeholder="Valitse salasana" id="newPassword" name="newPassword" required><br>
+                <p>Anna salasana uudelleen:</p>
+                <input type="password" placeholder="Vahvista salasana" id="newPassword2" name="newPassword2" required><br>
+                <button id="registerBtn" type="submit">Rekisteröidy</button>
+            </form>
+            <a href="#" id="loginLink" style="display: none;">Kirjaudu</a>
+        </div>
+    </div>
+    
+    <script src="loginPage.js"></script>
+</body>
+</html>
