@@ -71,7 +71,7 @@ function initCalendar() {
         }
 
         /* seuraavan kuukauden päivät (näytössä olevan kuukauden loppuun) */
-        if (nextDays < 8){
+        if (nextDays < 7){
         for (let j = 1; j <= nextDays; j++){
             days += `<div class="day next-date">${j}</div>`;
         }
