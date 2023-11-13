@@ -173,3 +173,82 @@ function getActiveDay(date) {
     eventDay.innerHTML = dayName;
     eventDate.innerHTML = date + ' ' + months[month] + ' ' + year;
 }
+
+// KARTTAOSIO
+
+// Kartan luominen ja aloituspaikan asetus
+var map = L.map('map').setView([65.0, 25.0], 6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+}).addTo(map);
+
+var markers = L.layerGroup();
+markers.addTo(map);
+
+// Esimerkki rekisteröidyistä kyydeistä
+var exampleRides = [
+    { name: 'Helsinki', location: [60.1699, 24.9384] },
+    { name: 'Tampere', location: [61.4978, 23.7610] },
+    { name: 'Kuopio', location: [62.879, 27.678] },
+    { name: 'Pihtipudas', location: [63.445, 25.766] },
+    { name: 'Ylivieska', location: [64.128, 24.547] }
+];
+
+exampleRides.forEach(function(ride) {
+    var marker = L.marker(ride.location);
+    marker.addTo(markers);
+    marker.bindPopup(ride.name);
+});
+
+function updateRideList(rides) {
+    var rideListElement = document.getElementById('ride-list');
+    rideListElement.innerHTML = '';        
+    if (rides) {
+        rides.forEach(function(ride) {
+        var listItem = document.createElement('li');
+        listItem.textContent = ride.name + ' (' + (ride.distance / 1000).toFixed(2) + ' km away)';
+        rideListElement.appendChild(listItem);
+        });
+    }
+}
+
+// Eri Vaihtoehdot karttaa klikatessa
+map.on('click', function(e) {
+    var userChoice = prompt('Do you want to register a new ride or search nearby rides?\nEnter "register" or "search".');        
+    if (userChoice) {
+        if (userChoice.toLowerCase() === 'register') {
+        registerNewRide(e.latlng);
+        } else if (userChoice.toLowerCase() === 'search') {
+        searchNearbyRides(e.latlng);
+        } else {
+        alert('Invalid choice. Please enter "register" or "search".');
+        }
+    }
+});
+
+// Kyytien rekisteröinti
+function registerNewRide(coordinates) {
+    var rideName = prompt('Enter the name of the ride:');        
+    if (rideName) {
+        var marker = L.marker(coordinates);
+        marker.addTo(markers);
+        marker.bindPopup(rideName);        
+        updateRideList();
+    }
+}
+
+// Kyytien haku
+function searchNearbyRides(coordinates) {
+    var rideList = [];      
+    markers.eachLayer(function(marker) {
+        var distance = Math.round(coordinates.distanceTo(marker.getLatLng()));
+        if (distance <= 100000) { // Haku etäisyys (100km)
+            rideList.push({
+            name: marker.getPopup().getContent(),
+            distance: distance,
+        });
+    }
+});
+
+updateRideList(rideList);
+}
