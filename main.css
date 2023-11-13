@@ -151,3 +151,34 @@
     overflow: scroll;
 }
 /* CARPOOL NOTES ENDS */
+
+/* Kartta tyylit */
+
+#map-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+#map {
+    border: solid;
+    border-width: 3px;
+    border-color: #69D84f;
+    margin: 10px;
+    margin-top: 20px;
+    max-width: 600px;
+    width: 100%;
+    flex: 1;
+}
+
+#locations {
+    flex: 1;
+    margin-left: 10px;
+}
+
+#rides-head {
+    padding: 10px;
+}
+
+#ride-list {
+    margin-left: 10px;
+}
