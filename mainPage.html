@@ -3,9 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Kimppakyytipalvelu</title>
 </head>
 <body>
-    
+    <div class="big-container"> <!-- ison esimerkki kalenterin pohja -->
+        <div class="calendar">
+            <div class="month"> <!-- kuukauden navigointi -->
+                <i class="fa fa-angle-left prev"></i>
+                <div class="date"><!-- funktio initCalendar päivittää kuukauden ja vuoden --></div>
+                <i class="fa fa-angle-right next"></i>
+            </div>
+            <div class="weekdays">
+                <div class="weekday">mon</div>
+                <div class="weekday">tue</div>
+                <div class="weekday">wed</div>
+                <div class="weekday">thu</div>
+                <div class="weekday">fri</div>
+                <div class="weekday">sat</div>
+                <div class="weekday">sun</div>
+            </div>
+            <div class="days">
+                <!-- 
+                    funktio initCalendar päivittää päivät
+
+                    classes:
+                    day, 
+                    today, 
+                    prev-date,
+                    next-date,
+                    active, 
+                    car-icon: fa-solid fa-car
+                 -->
+            </div>
+        </div>
+    </div>
+    <div class="carpoolNotes">
+        <div class="today-date">
+            <div class="event-day"><!-- function getActiveDay --></div>
+            <div class="event-date"><!-- function getActiveDay --></div>
+        </div>
+        <div class="add-event">
+            <!-- 
+                jollei toista paikkaa jo
+                kyytien lisäykseen
+             -->
+        </div>
+        <div class="events">
+            jotaki
+            <!--
+                esim kyydit valitulta päivältä
+            -->
+        </div>
+    </div>
+
+    <script src="./main.js"></script>
 </body>
 </html>
