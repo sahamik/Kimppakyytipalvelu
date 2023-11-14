@@ -64,7 +64,30 @@
         <div id="locations">
             <h2 id="rides-head">Registered Rides</h2>
             <ul id="ride-list">
+                <!-- kyytien tiedot listassa -->
             </ul>
+        </div>
+    </div>
+    <!-- karttaa klikatessa avautuu modal window UI -->
+    <div id="mapActionModal" class="modal">
+        <div class="modal-content">
+            <button id="registerActionBtn">Register new ride</button>
+            <button id="searchActionBtn">Search nearby rides</button>
+        </div>
+    </div>
+    <!-- toinen modal kyydin rekisteröintiin -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <label for="rideName">Ride Name:</label>
+            <input type="text" id="rideName" placeholder="Enter ride name"><br>
+            <label for="destination">Destination:</label>
+            <input type="text" id="destination" placeholder="Enter destination"><br>
+            <label for="cost">Cost:</label>
+            <input type="text" id="cost" placeholder="Enter cost"><br>
+            <label for="startTime">Start Time:</label>
+            <input type="text" id="startTime" placeholder="Enter start time"><br>
+            <button id="registerBtn">Register Ride</button>
         </div>
     </div>
     <script src="./main.js"></script>

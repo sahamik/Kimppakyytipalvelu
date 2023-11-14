@@ -187,17 +187,17 @@ markers.addTo(map);
 
 // Esimerkki rekisteröidyistä kyydeistä
 var exampleRides = [
-    { name: 'Helsinki', location: [60.1699, 24.9384] },
-    { name: 'Tampere', location: [61.4978, 23.7610] },
-    { name: 'Kuopio', location: [62.879, 27.678] },
-    { name: 'Pihtipudas', location: [63.445, 25.766] },
-    { name: 'Ylivieska', location: [64.128, 24.547] }
+    { name: 'Helsinki', destination: 'Turku', cost: '10€', startTime: '08:00', location: [60.1699, 24.9384] },
+    { name: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startTime: '09:30', location: [61.4978, 23.7610] },
+    { name: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startTime: '10:45', location: [62.879, 27.678] },
+    { name: 'Pihtipudas', destination: 'Pyhäjärvi', cost: '8€', startTime: '12:15', location: [63.445, 25.766] },
+    { name: 'Ylivieska', destination: 'Kempele', cost: 'Free', startTime: '14:00', location: [64.128, 24.547] }
 ];
 
 exampleRides.forEach(function(ride) {
     var marker = L.marker(ride.location);
     marker.addTo(markers);
-    marker.bindPopup(ride.name);
+    marker.bindPopup(`${ride.name} --> ${ride.destination}, Cost: ${ride.cost}, Start Time: ${ride.startTime}`);
 });
 
 function updateRideList(rides) {
@@ -212,30 +212,70 @@ function updateRideList(rides) {
     }
 }
 
+const registerModal = document.getElementById('registerModal');
+const registerBtn = document.getElementById('registerBtn');
+const closeBtn = document.getElementsByClassName('close')[0];
+const mapActionModal = document.getElementById('mapActionModal');
+const registerActionBtn = document.getElementById('registerActionBtn');
+const searchActionBtn = document.getElementById('searchActionBtn');
+let clickEventCoordinates;
+
 // Eri Vaihtoehdot karttaa klikatessa
 map.on('click', function(e) {
-    var userChoice = prompt('Do you want to register a new ride or search nearby rides?\nEnter "register" or "search".');        
-    if (userChoice) {
-        if (userChoice.toLowerCase() === 'register') {
-        registerNewRide(e.latlng);
-        } else if (userChoice.toLowerCase() === 'search') {
-        searchNearbyRides(e.latlng);
-        } else {
-        alert('Invalid choice. Please enter "register" or "search".');
-        }
-    }
+    mapActionModal.style.display = 'block';
+    clickEventCoordinates = e.latlng;
 });
 
-// Kyytien rekisteröinti
-function registerNewRide(coordinates) {
-    var rideName = prompt('Enter the name of the ride:');        
-    if (rideName) {
-        var marker = L.marker(coordinates);
-        marker.addTo(markers);
-        marker.bindPopup(rideName);        
-        updateRideList();
+closeBtn.onclick = function() {
+    registerModal.style.display = 'none';
+};
+
+// Modal sulkeminen klikkaamalla
+window.onclick = function(event) {
+    if (event.target == registerModal) {
+        registerModal.style.display = 'none';
     }
-}
+};
+
+// Modal valinta, uuden kyydin rekisteröinti
+registerActionBtn.addEventListener('click', function() {
+    mapActionModal.style.display = 'none';
+    registerModal.style.display = 'block';
+    registerNewRide(clickEventCoordinates);
+});
+
+// Modal valinta, kyytien etsiminen
+searchActionBtn.addEventListener('click', function() {
+    mapActionModal.style.display = 'none';
+    searchNearbyRides(clickEventCoordinates);
+});
+
+// Modal rekisteröinti nappi
+registerBtn.addEventListener('click', function() {
+    const rideNameInput = document.getElementById('rideName');
+    const destinationInput = document.getElementById('destination');
+    const costInput = document.getElementById('cost');
+    const startTimeInput = document.getElementById('startTime');
+    const rideName = rideNameInput.value.trim();
+    const destination = destinationInput.value.trim();
+    const cost = costInput.value.trim();
+    const startTime = startTimeInput.value.trim();
+
+    if (rideName === "" || destination === "" || cost === "" || startTime === "") {
+        alert('Please fill in all fields');
+        return;
+    }
+
+    const coordinates = clickEventCoordinates;
+    const marker = L.marker(coordinates);
+    marker.addTo(markers);
+    marker.bindPopup(`${rideName} --> ${destination}, Cost: ${cost}, Start Time: ${startTime}`);
+    rideNameInput.value = "";
+    destinationInput.value = "";
+    costInput.value = "";
+    startTimeInput.value = "";
+    registerModal.style.display = 'none';
+});
 
 // Kyytien haku
 function searchNearbyRides(coordinates) {
