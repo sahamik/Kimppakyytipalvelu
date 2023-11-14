@@ -7,34 +7,53 @@
     <link rel="stylesheet" href="loginPage.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200;400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@200;400&family=Poppins:wght@300&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div class="container">
-        <div class="loginPage">
-            <h2>Kirjaudu kimppakyytipalveluun</h2>
-            <form id="loginForm">
-                <p>Käyttäjänimi:</p>
+        <div class="loginPage" id="loginPage">
+            <h2>Kimppakyytipalvelu</h2>
+            <h3 id="loginText">Kirjaudu sisään</h3>
+            <form id="loginForm" class="myForm">
+                <p class="formText">Käyttäjänimi:</p>
                 <input type="text" placeholder="Enter Username" id="userName" name="username" required><br>
-                <p>Salasana:</p>
+                <p class="formText">Salasana:</p>
                 <input type="password" placeholder="Enter Password" id="password" name="password" required><br>
-                <button id="loginBtn" type="submit">Login</button>
+                <span class="user-error" id="userError" style="display: none;">
+                    <p class="errorText">Antamasi käyttäjätunnus tai salasana on väärä</p>
+                </span>
+                <button id="loginBtn" class="button" type="submit">Kirjaudu sisään</button>
             </form>
-            <a href="#" id="registrationLink">Rekisteröidy</a>
-            <form id="registrationForm" style="display: none;">
-                <h3>Rekisteröityminen</h3>
-                <p>Anna käyttäjänimi:</p>
+            <p id="option1" class="option">Jos sinulla ei ole tunnuksia,<a href="#" id="registrationLink">Rekisteröidy</a></p>
+            <form id="registrationForm" class="myForm" style="display: none;">
+                <h3 id="register">Rekisteröityminen</h3>
+                <p class="formText">Anna käyttäjänimi:</p>
                 <input type="text" placeholder="Käyttäjänimi" id="newUser" name="newUser" required><br>
-                <p>Anna sähköpostiosoite:</p>
+                <span class="error" id="userNameError" style="display: none;">
+                    <p class="errorText">Antamasi käyttäjätunnus on jo olemassa</p>
+                </span>
+                <p class="formText">Anna sähköpostiosoite:</p>
                 <input type="email" placeholder="Sähköposti" id="newEmail" name="newEmail" required><br>
-                <p>Anna salasana:</p>
+                <span class="error" id="userEmailError" style="display: none;">
+                    <p class="errorText">Anna sähköposti oikeassa muodossa</p>
+                </span>
+                <p class="formText">Anna salasana:</p>
                 <input type="password" placeholder="Valitse salasana" id="newPassword" name="newPassword" required><br>
-                <p>Anna salasana uudelleen:</p>
+                <span class="error" id="userPasswordError" style="display: none;">
+                    <p class="errorText">Salasanan pitää olla vähintään 8 merkkiä pitkä,<br> sisältää isoja sekä pieniä kirjaimia ja numeroita </p>
+                </span>
+                <p class="formText">Anna salasana uudelleen:</p>
                 <input type="password" placeholder="Vahvista salasana" id="newPassword2" name="newPassword2" required><br>
-                <button id="registerBtn" type="submit">Rekisteröidy</button>
+                <span class="error" id="userPasswordError2" style="display: none;">
+                    <p class="errorText">Antamasi salasana ei täsmää</p>
+                </span>
+                <button id="registerBtn" class="button" type="submit">Rekisteröidy</button>
             </form>
-            <a href="#" id="loginLink" style="display: none;">Kirjaudu</a>
+            <p id="option2" class="option" style="display: none;">Jos sinulla on jo tunnukset,<a href="#" id="loginLink">Kirjaudu</a></p>
         </div>
     </div>
     
