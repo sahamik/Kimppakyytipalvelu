@@ -10,7 +10,7 @@
     <title>Kimppakyytipalvelu</title>
 </head>
 <body>
-    <div class="big-container"> <!-- ison esimerkki kalenterin pohja -->
+    <div class="calendar-container"> <!-- kalenterin pohja -->
         <div class="calendar">
             <div class="month"> <!-- kuukauden navigointi -->
                 <i class="fa fa-angle-left prev"></i>
@@ -40,25 +40,24 @@
                  -->
             </div>
         </div>
-    </div>
-    <div class="carpoolNotes">
-        <div class="today-date">
-            <div class="event-day"><!-- function getActiveDay --></div>
-            <div class="event-date"><!-- function getActiveDay --></div>
-        </div>
-        <div class="add-event">
-            <!-- 
-                jollei toista paikkaa jo
-                kyytien lisäykseen
-             -->
-        </div>
-        <div class="events">
-            jotaki
-            <!--
-                esim kyydit valitulta päivältä
-            -->
+        <div class="carpoolNotes">
+            <div class="today-date">
+                <div class="event-day"><!-- function getActiveDay --></div>
+                <div class="event-date"><!-- function getActiveDay --></div>
+            </div>
+            <div class="calendar-events">
+                <!-- <div class="calendar-event"> kyytitiedot <i class="fa-regular fa-user"> 0 </i></div> -->
+            </div>
+            <div class="add-calendar-event">
+                <button>add event</button>
+                <!-- 
+                    jollei toista paikkaa jo
+                    kyytien lisäykseen
+                 -->
+            </div>
         </div>
     </div>
+
     <div id="map-container">
         <div id="map" style="width: 600px; height: 600px;"></div>
         <div id="locations">
@@ -85,6 +84,8 @@
             <input type="text" id="destination" placeholder="Enter destination"><br>
             <label for="cost">Cost:</label>
             <input type="text" id="cost" placeholder="Enter cost"><br>
+            <label for="startDay">Start Day:</label>
+            <input type="text" id="startDay" placeholder="Enter start Day"><br>
             <label for="startTime">Start Time:</label>
             <input type="text" id="startTime" placeholder="Enter start time"><br>
             <button id="registerBtn">Register Ride</button>
