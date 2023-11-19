@@ -58,12 +58,14 @@
         </div>
     </div>
 
+    <!-- Karttaosio -->
+
     <div id="map-container">
-        <div id="map" style="width: 600px; height: 600px;"></div>
+        <div id="map" style="height: 600px;"></div>
         <div id="locations">
-            <h2 id="rides-head">Registered Rides</h2>
+            <h2 id="rides-head">Nearby Rides</h2>
             <ul id="ride-list">
-                <!-- kyytien tiedot listassa -->
+                <!-- Etsityt kyydit listassa -->
             </ul>
         </div>
     </div>
@@ -78,8 +80,8 @@
     <div id="registerModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <label for="rideName">Ride Name:</label>
-            <input type="text" id="rideName" placeholder="Enter ride name"><br>
+            <label for="startLocation">Start Location:</label>
+            <input type="text" id="startLocation" placeholder="Enter start location"><br>
             <label for="destination">Destination:</label>
             <input type="text" id="destination" placeholder="Enter destination"><br>
             <label for="cost">Cost:</label>
@@ -90,6 +92,21 @@
             <input type="text" id="startTime" placeholder="Enter start time"><br>
             <button id="registerBtn">Register Ride</button>
         </div>
+    </div>
+    <div id="ride-list-all">
+        <!-- Kaikki kyydit -->
+        <table id="ride-table">
+            <thead>
+                <tr>
+                    <th>Start Location</th>
+                    <th>Destination</th>
+                    <th>Cost</th>
+                    <th>Day</th>
+                    <th>Start Time</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
     <script src="./main.js"></script>
 </body>

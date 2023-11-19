@@ -221,6 +221,27 @@
     margin-left: 10px;
 }
 
+#ride-table {
+    width: 80%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    margin-left: 10px;
+}
+
+#ride-table th, #ride-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#ride-table th {
+    background-color: #f2f2f2;
+}
+
+#ride-table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
 /* Modal UI tyylit */
 
 .modal {

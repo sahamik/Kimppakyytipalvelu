@@ -67,7 +67,7 @@ function initCalendar() {
         for ( let i = prevLastDay + 1 - prevLastDays; i <= prevLastDay; i++ )
             { 
                 currMoDates.push(`${i}.${currMonth-1}.${currYear}`);
-                exampleRides.find(ride => ride.startDay === currMoDates[currMoDates.length - 1]
+                allRides.find(ride => ride.startDay === currMoDates[currMoDates.length - 1]
                     ? eventsToShow.push(ride) : false ) 
                 ? days += `<div class="day prev-date">${i} <i class="fa-solid fa-car"></i></div>` 
                 : days += `<div class="day prev-date">${i}</div>`;
@@ -76,7 +76,7 @@ function initCalendar() {
     /* CURR */
     for ( let i = 1; i <= lastDate; i++ ) { 
         currMoDates.push(`${i}.${currMonth}.${currYear}`) 
-        exampleRides.find(ride => ride.startDay === currMoDates[currMoDates.length - 1] 
+        allRides.find(ride => ride.startDay === currMoDates[currMoDates.length - 1] 
             ? eventsToShow.push(ride) : false ) 
         ? days += `<div class="day">${i} <i class="fa-solid fa-car"></i></i></div>` 
         : days += `<div class="day">${i}</div>`;
@@ -85,7 +85,7 @@ function initCalendar() {
     if ( nextDays > 0 ) {
         for ( let i = 1; i <= nextDays; i++ ) { 
             currMoDates.push(`${i}.${currMonth+1}.${currYear}`) 
-            exampleRides.find(ride => 
+            allRides.find(ride => 
                 ride.startDay === currMoDates[currMoDates.length - 1] 
                 ? eventsToShow.push(ride) : false ) 
             ? days += `<div class="day next-date">${i} <i class="fa-solid fa-car"></i></i></div>`
@@ -104,7 +104,7 @@ function setEvents( data ) {
     if ( data.title === 'dates' ) {
         const days = document.querySelectorAll('.day')
         data.data.map(( date, index ) => {
-            exampleRides.find( ride => ride.startDay === date )
+            allRides.find( ride => ride.startDay === date )
             ? days[ index ].addEventListener('click', () => showCalendarEvent({ title: 'showEvent', date: date, allEvents: data.allEvents })) /* puuttuu monen eventit näyttäminen */
             : days[ index ].addEventListener('click', () => showCalendarEvent({ title: 'showEvent', date: date }))
         })
@@ -136,7 +136,7 @@ function showCalendarEvent(data) {
                 eventElement.classList.add('calendar-event')
                 eventElement.innerHTML = `
                 <div class="calendar-event">
-                <p>${ride.name} -> ${ride.destination}</p>
+                <p>${ride.startLocation} -> ${ride.destination}</p>
                 <p>cost ${ride.cost}</p>
                 <p>time ${ride.startTime}</p>
                  <i class="fa-regular fa-user"> ${'0'} </i></div>
@@ -176,37 +176,57 @@ next.addEventListener('click', nextMonth)
 // KARTTAOSIO
 
 // Kartan luominen ja aloituspaikan asetus
-var map = L.map('map').setView([65.0, 25.0], 6);
+let map = L.map('map').setView([65.0, 25.0], 6);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
 }).addTo(map);
 
-var markers = L.layerGroup();
+let markers = L.layerGroup();
 markers.addTo(map);
 
-// Esimerkki rekisteröidyistä kyydeistä
-var exampleRides = [
-    { name: 'Helsinki', destination: 'Turku', cost: '10€', startDay: '31.10.2023', startTime: '08:00', location: [60.1699, 24.9384] },
-    { name: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '23.11.2023', startTime: '09:30', location: [61.4978, 23.7610] },
-    { name: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startDay: '12.11.2023', startTime: '10:45', location: [62.879, 27.678] },
-    { name: 'Pihtipudas', destination: 'Pyhäjärvi', cost: '8€', startDay: '12.11.2023', startTime: '12:15', location: [63.445, 25.766] },
-    { name: 'Ylivieska', destination: 'Kempele', cost: 'Free', startDay: '1.12.2023', startTime: '14:00', location: [64.128, 24.547] }
+// Esimerkki rekisteröidyistä kyydeistä. Uudet kyydit rekisteröidään tänne
+let allRides = [
+    { startLocation: 'Helsinki', destination: 'Turku', cost: '10€', startDay: '31.10.2023', startTime: '08:00', location: [60.1699, 24.9384] },
+    { startLocation: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '23.11.2023', startTime: '09:30', location: [61.4978, 23.7610] },
+    { startLocation: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startDay: '12.11.2023', startTime: '10:45', location: [62.879, 27.678] },
+    { startLocation: 'Pihtipudas', destination: 'Pyhäjärvi', cost: '8€', startDay: '12.11.2023', startTime: '12:15', location: [63.445, 25.766] },
+    { startLocation: 'Ylivieska', destination: 'Kempele', cost: 'Free', startDay: '1.12.2023', startTime: '14:00', location: [64.128, 24.547] }
 ];
 
-exampleRides.forEach(function(ride) {
-    var marker = L.marker(ride.location);
+// Kyytien renderöinti kartalle ja taulukkoon
+function renderRides(ride) {
+    let marker = L.marker(ride.location);
     marker.addTo(markers);
-    marker.bindPopup(`${ride.name} --> ${ride.destination}, Cost: ${ride.cost}, Start Day: ${ride.startDay}, Start Time: ${ride.startTime}`);
-});
+    marker.bindPopup(`${ride.startLocation} -> ${ride.destination}, Cost: ${ride.cost}, Start Day: ${ride.startDay}, Start Time: ${ride.startTime}`);
+
+    let rideTable = document.getElementById('ride-table');
+    let tbody = rideTable.getElementsByTagName('tbody')[0];
+
+    let row = tbody.insertRow();
+    let cell1 = row.insertCell(0);
+    let cell2 = row.insertCell(1);
+    let cell3 = row.insertCell(2);
+    let cell4 = row.insertCell(3);
+    let cell5 = row.insertCell(4);
+
+    cell1.textContent = ride.startLocation;
+    cell2.textContent = ride.destination;
+    cell3.textContent = ride.cost;
+    cell4.textContent = ride.startDay;
+    cell5.textContent = ride.startTime;
+}
+
+ // Alustava kyytien merkintä kartalle
+allRides.forEach(renderRides);
 
 function updateRideList(rides) {
-    var rideListElement = document.getElementById('ride-list');
+    let rideListElement = document.getElementById('ride-list');   
     rideListElement.innerHTML = '';        
     if (rides) {
         rides.forEach(function(ride) {
-        var listItem = document.createElement('li');
-        listItem.textContent = ride.name + ' (' + (ride.distance / 1000).toFixed(2) + ' km away)';
-        rideListElement.appendChild(listItem);
+            let listItem = document.createElement('li');
+            listItem.textContent = ride.startLocation + ' (' + (ride.distance / 1000).toFixed(2) + ' km away)';
+            rideListElement.appendChild(listItem);
         });
     }
 }
@@ -240,7 +260,6 @@ window.onclick = function(event) {
 registerActionBtn.addEventListener('click', function() {
     mapActionModal.style.display = 'none';
     registerModal.style.display = 'block';
-    registerNewRide(clickEventCoordinates);
 });
 
 // Modal valinta, kyytien etsiminen
@@ -249,29 +268,46 @@ searchActionBtn.addEventListener('click', function() {
     searchNearbyRides(clickEventCoordinates);
 });
 
-// Modal rekisteröinti nappi
+// Modal rekisteröinti nappi, lisää uuden kyydin allRides arrayhin
 registerBtn.addEventListener('click', function() {
-    const rideNameInput = document.getElementById('rideName');
+    const startLocationInput = document.getElementById('startLocation');
     const destinationInput = document.getElementById('destination');
     const costInput = document.getElementById('cost');
     const startDayInput = document.getElementById('startDay');
     const startTimeInput = document.getElementById('startTime');
-    const rideName = rideNameInput.value.trim();
+    const startLocation = startLocationInput.value.trim();
     const destination = destinationInput.value.trim();
     const cost = costInput.value.trim();
     const startDay = startDayInput.value.trim();
     const startTime = startTimeInput.value.trim();
 
-    if (rideName === "" || destination === "" || cost === "" || startDay === "" || startTime === "") {
+    // Tyhjien kenttien tarkistus
+    if (startLocation === "" || destination === "" || cost === "" || startDay === "" || startTime === "") {
         alert('Please fill in all fields');
         return;
     }
 
+    // Rekisteröidyn kyydin merkkaus karttaan
     const coordinates = clickEventCoordinates;
     const marker = L.marker(coordinates);
     marker.addTo(markers);
-    marker.bindPopup(`${rideName} --> ${destination}, Cost: ${cost}, Start Day: ${startDay}, Start Time: ${startTime}`);
-    rideNameInput.value = "";
+    marker.bindPopup(`${startLocation} -> ${destination}, Cost: ${cost}, Start Day: ${startDay}, Start Time: ${startTime}`);
+    
+    const newRide = {
+        startLocation: startLocation,
+        destination: destination,
+        cost: cost,
+        startDay: startDay,
+        startTime: startTime,
+        location: coordinates
+    };
+
+    markers.clearLayers();
+    allRides.push(newRide);
+    let tbody = document.getElementById('ride-table').getElementsByTagName('tbody')[0];
+    tbody.innerHTML = '';
+    allRides.forEach(renderRides);
+    startLocationInput.value = "";
     destinationInput.value = "";
     costInput.value = "";
     startDayInput.value = "";
@@ -281,12 +317,12 @@ registerBtn.addEventListener('click', function() {
 
 // Kyytien haku
 function searchNearbyRides(coordinates) {
-    var rideList = [];      
+    let rideList = [];      
     markers.eachLayer(function(marker) {
-        var distance = Math.round(coordinates.distanceTo(marker.getLatLng()));
+        let distance = Math.round(coordinates.distanceTo(marker.getLatLng()));
         if (distance <= 100000) { // Haku etäisyys (100km)
             rideList.push({
-            name: marker.getPopup().getContent(),
+            startLocation: marker.getPopup().getContent(),
             distance: distance,
         });
     }
