@@ -32,36 +32,19 @@ let months = [
 /* CALENDAR */
 function initCalendar() {
     const eventsToShow = [] 
-    const firstWeekday = new Date(year, month, 1).getDay(); /* kuun ensimmäinen päivä */
+    const firstWeekday = new Date(year, month, 0).getDay() + 1; /* kuun ensimmäinen päivä */
     const lastWeekday = new Date(year, month + 1, 0).getDay(); /* kuun ensimmäinen päivä */
     const lastDate = new Date(year, month + 1, 0).getDate(); /* kuun viimeinen päivä */
     const prevLastDay = new Date(year, month, 0).getDate(); /* aikaisemman kuun viimeinen päivä */
     const prevLastDays = firstWeekday - 1; /* +1  jotta pysytään indexissä */
     const nextDays = 7 - lastWeekday;
 
-    const currMonth = new Date(year, month).getMonth() + 1;
+    const currMonth = new Date(year, month + 1).getMonth();
     const currYear = new Date(year, month).getFullYear();;
 
     date.innerHTML = months[month] + " " + year; /* kuukausi kalenterin yläosaan */
     let currMoDates = [] /* kaikki päivämäärät pisteellä */
     let days = " " /* päivien lisäyksen pohja kalenteriin */
-    
-/*     console.log(`DEBUG\n
-    today [d${today.getDate()} m${today.getMonth()+1}]\n
-    prev last day [${prevLastDay}]\n
-    prev last days curr m [${prevLastDays}]\n
-    first weekday [${firstWeekday}] => [${weekdays[firstWeekday]}]\n
-    last weekday [${lastWeekday}] => [${weekdays[lastWeekday]}]\n
-    last Date curr m [${lastDate}]\n
-    next days [${nextDays}]\n
-    current month [${currMonth}] => [${months[currMonth]}]\n
-    current year [${currYear}]
-`); */
-
-    /* TODO
-    - ei ota vielä täysin oikeita päiviä kun navigoi seuraavaan kuukauteen
-    - ei aseta tämän päivän näkymää
-    */
 
     /* PREV */
     if ( firstWeekday > 0 ) {
@@ -86,7 +69,7 @@ function initCalendar() {
         : days += `<div class="day">${i}</div>`;
     }
     /* NEXT */
-    if ( nextDays > 0 ) {
+    if ( nextDays > 0 && nextDays < 7 ) {
         for ( let i = 1; i <= nextDays; i++ ) { 
             currMoDates.push(`${i}.${currMonth+1}.${currYear}`) 
             allRides.find(ride => 
@@ -97,13 +80,12 @@ function initCalendar() {
         }
     }
     daysContainer.innerHTML = days;
-    /* setEvents({title:'showDatesEvents', data:currMoDates, allEvents: eventsToShow}) */
     showEvents(currMoDates)
 }
 
 function showEvents(currMoDates) {
-    /* needed data */
-/*  console.log(currMoDates)
+    /* needed data
+    console.log(currMoDates)
     console.log(allRides) */
     let events = ""
     /* needed elements */
@@ -121,7 +103,7 @@ function showEvents(currMoDates) {
         if (day === `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`){ 
             days[index].classList.add('today');
             eventDay.innerHTML = `${weekdays[today.getDay()]}`;
-            eventDate.innerHTML = day;
+            eventDate.innerHTML = `${day} <small>today</small>`;
 
             allRides.forEach((ride) => {
                 if (ride.startDay === day) {
