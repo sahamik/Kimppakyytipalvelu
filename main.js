@@ -13,7 +13,7 @@ let today = new Date();
 let activeDay;
 let month = today.getMonth();
 let year = today.getFullYear();
-let weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+let weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 let months = [
     "January",
     "February",
@@ -47,10 +47,11 @@ function initCalendar() {
     let days = " " /* päivien lisäyksen pohja kalenteriin */
     
 /*     console.log(`DEBUG\n
+    today [d${today.getDate()} m${today.getMonth()+1}]\n
     prev last day [${prevLastDay}]\n
     prev last days curr m [${prevLastDays}]\n
     first weekday [${firstWeekday}] => [${weekdays[firstWeekday]}]\n
-    last weekday [${lastWeekday}] => [${weekdays[lastWeekday-1]}]\n
+    last weekday [${lastWeekday}] => [${weekdays[lastWeekday]}]\n
     last Date curr m [${lastDate}]\n
     next days [${nextDays}]\n
     current month [${currMonth}] => [${months[currMonth]}]\n
@@ -76,8 +77,11 @@ function initCalendar() {
     /* CURR */
     for ( let i = 1; i <= lastDate; i++ ) { 
         currMoDates.push(`${i}.${currMonth}.${currYear}`) 
-        allRides.find(ride => ride.startDay === currMoDates[currMoDates.length - 1] 
-            ? eventsToShow.push(ride) : false ) 
+        allRides.find(ride => 
+            ride.startDay === currMoDates[currMoDates.length - 1] 
+            ? eventsToShow.push(ride) 
+            : false 
+        ) 
         ? days += `<div class="day">${i} <i class="fa-solid fa-car"></i></i></div>` 
         : days += `<div class="day">${i}</div>`;
     }
@@ -93,59 +97,77 @@ function initCalendar() {
         }
     }
     daysContainer.innerHTML = days;
-    setEvents({title:'dates', data:currMoDates, allEvents: eventsToShow})
+    /* setEvents({title:'showDatesEvents', data:currMoDates, allEvents: eventsToShow}) */
+    showEvents(currMoDates)
 }
 
-/* SET EVENT
-- voi käyttää myös muuhun ajatuksena laajennus
-- kutsuminen objectilla title vaadittuna
-*/
-function setEvents( data ) {
-    if ( data.title === 'dates' ) {
-        const days = document.querySelectorAll('.day')
-        data.data.map(( date, index ) => {
-            allRides.find( ride => ride.startDay === date )
-            ? days[ index ].addEventListener('click', () => showCalendarEvent({ title: 'showEvent', date: date, allEvents: data.allEvents })) /* puuttuu monen eventit näyttäminen */
-            : days[ index ].addEventListener('click', () => showCalendarEvent({ title: 'showEvent', date: date }))
-        })
-    }
+function showEvents(currMoDates) {
+    /* needed data */
+/*  console.log(currMoDates)
+    console.log(allRides) */
+    let events = ""
+    /* needed elements */
+    let eventDay = document.querySelector('.event-day');
+    let eventDate = document.querySelector('.event-date');
+    let allEvents = document.querySelector('.calendar-events');
+    let days = document.querySelectorAll('.day')
 
-}
 
-/* SHOW CALENDAR EVENT
-- voi käyttää myös muuhun ajatuksena laajennus
-- kutsuminen objectilla title vaadittuna
-*/
-function showCalendarEvent(data) {
-    if ( data.title === 'showEvent' ) {
-        const calendarEvents = document.querySelector('.calendar-events')
-        calendarEvents.innerHTML = ''
+    /* click event for all days */
+    currMoDates.forEach((day, index) => {
+        let indexDay = day.split('.').map((d) => Number(d))
+        let indexWeekday = new Date(`${indexDay[2]}-${indexDay[1]}-${indexDay[0]}`).getDay();
 
-        /* TODO
-         - ei ota esim 2 eventtii esille
-         - ei aseta valittua päivää näkyville
-         - ei näytä 'no events'
-        */
-       console.log(data.allEvents)
-        
-        ! data.allEvents
-        ? eventElement.innerHTML = `<div class="calendar-event"> no events </div>`
-        : data.allEvents.forEach((ride) => {
-            if ( ride.startDay === data.date) {
-                const eventElement = document.createElement('div')
-                eventElement.classList.add('calendar-event')
-                eventElement.innerHTML = `
-                <div class="calendar-event">
-                <p>${ride.startLocation} -> ${ride.destination}</p>
-                <p>cost ${ride.cost}</p>
-                <p>time ${ride.startTime}</p>
-                 <i class="fa-regular fa-user"> ${'0'} </i></div>
-                `
-                calendarEvents.appendChild(eventElement)
+        if (day === `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`){ 
+            days[index].classList.add('today');
+            eventDay.innerHTML = `${weekdays[today.getDay()]}`;
+            eventDate.innerHTML = day;
+
+            allRides.forEach((ride) => {
+                if (ride.startDay === day) {
+                    events += `<div class="calendar-event">
+                    <p>${ride.startLocation} -> ${ride.destination}</p>
+                    <p>time: ${ride.startTime}</p>
+                    <p>cost: ${ride.cost}</p>
+                    <p><i class="fa-regular fa-user"> ${'0'} </i><button>join</button></p>
+                    </div>`
                 }
-            }
-        )
-    }
+            })
+            allEvents.innerHTML = events
+        }
+
+        allRides.find( ride => ride.startDay === day )
+        ? days[index].addEventListener('click', () => { /* jos valittu pv on kirjatuissa kyydeissä */
+            days.forEach( d => d.classList.contains('active') ? d.classList.remove('active') : null )
+            days[index].classList.add('active');
+            console.log(day,'is event day', weekdays[indexWeekday]);
+            eventDay.innerHTML = `${weekdays[indexWeekday]}`
+            eventDate.innerHTML = `${day}`
+            events = ""
+            allEvents.innerHTML = ""
+            allRides.forEach(r => {
+                r.startDay === day
+                ? events += `<div class="calendar-event">
+                <p>${r.startLocation} -> ${r.destination}</p>
+                <p>time: ${r.startTime}</p>
+                <p>cost: ${r.cost}</p>
+                <p><i class="fa-regular fa-user"> ${'0'} </i><button>join</button></p>
+                </div>`
+                : null
+            })
+            allEvents.innerHTML = events
+        })
+            
+        : days[index].addEventListener('click', () => { /* jos valittu pv ei ole kirjatuissa kyydeissä */
+            days.forEach( d => d.classList.contains('active') ? d.classList.remove('active') : null )
+            days[index].classList.add('active');
+            console.log(day,'is not event day', weekdays[indexWeekday]); 
+            eventDay.innerHTML = `${weekdays[indexWeekday]}`
+            eventDate.innerHTML = `${day}`
+            allEvents.innerHTML = ""
+            allEvents.innerHTML = 'no events'
+        })
+    })
 }
 
 /* aikaisemman kuukauden hakeminen */
@@ -186,9 +208,9 @@ markers.addTo(map);
 
 // Esimerkki rekisteröidyistä kyydeistä. Uudet kyydit rekisteröidään tänne
 let allRides = [
-    { startLocation: 'Helsinki', destination: 'Turku', cost: '10€', startDay: '31.10.2023', startTime: '08:00', location: [60.1699, 24.9384] },
-    { startLocation: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '23.11.2023', startTime: '09:30', location: [61.4978, 23.7610] },
-    { startLocation: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startDay: '12.11.2023', startTime: '10:45', location: [62.879, 27.678] },
+    { startLocation: 'Helsinki', destination: 'Turku', cost: '10€', startDay: '20.11.2023', startTime: '08:00', location: [60.1699, 24.9384] },
+    { startLocation: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '20.11.2023', startTime: '09:30', location: [61.4978, 23.7610] },
+    { startLocation: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startDay: '1.11.2023', startTime: '10:45', location: [62.879, 27.678] },
     { startLocation: 'Pihtipudas', destination: 'Pyhäjärvi', cost: '8€', startDay: '12.11.2023', startTime: '12:15', location: [63.445, 25.766] },
     { startLocation: 'Ylivieska', destination: 'Kempele', cost: 'Free', startDay: '1.12.2023', startTime: '14:00', location: [64.128, 24.547] }
 ];
