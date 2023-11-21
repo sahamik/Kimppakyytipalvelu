@@ -111,11 +111,21 @@ function showEvents(currMoDates) {
                     <p>${ride.startLocation} -> ${ride.destination}</p>
                     <p>time: ${ride.startTime}</p>
                     <p>cost: ${ride.cost}</p>
-                    <p><i class="fa-regular fa-user"> ${'0'} </i><button>join</button></p>
+                    <p><i class="fa-regular fa-user participantCount"> ${ride.participants} </i><button class="joinRideBtn" id="joinRideBtn">join</button></p>
                     </div>`
                 }
             })
             allEvents.innerHTML = events
+
+            /* Tapahtumakuuntelijat liity painikkeille. Kutsutaan joinRide funktiota kun klikataan eventin liity painiketta. Piilotetaan liity painike tämän jälkeen. */
+            let joinButtons = document.querySelectorAll(".joinRideBtn");
+            joinButtons.forEach((btn, index) => {
+                btn.addEventListener("click", function()  {
+                    let participantCount = document.querySelectorAll(".participantCount")[index];
+                    joinRide(allRides[index], participantCount, index);
+                    btn.style.display = "none";
+                })
+            })
         }
 
         allRides.find( ride => ride.startDay === day )
@@ -133,11 +143,21 @@ function showEvents(currMoDates) {
                 <p>${r.startLocation} -> ${r.destination}</p>
                 <p>time: ${r.startTime}</p>
                 <p>cost: ${r.cost}</p>
-                <p><i class="fa-regular fa-user"> ${'0'} </i><button>join</button></p>
+                <p><i class="fa-regular fa-user participantCount"> ${'0'} </i><button class="joinRideBtn">join</button></p>
                 </div>`
                 : null
             })
             allEvents.innerHTML = events
+
+            /* Tapahtumakuuntelijat liity painikkeille. Kutsutaan joinRide funktiota kun klikataan eventin liity painiketta. Piilotetaan liity painike tämän jälkeen. */
+            let joinButtons = document.querySelectorAll(".joinRideBtn");
+            joinButtons.forEach((btn, index) => {
+                btn.addEventListener("click", function()  {
+                    let participantCount = document.querySelectorAll(".participantCount")[index];
+                    joinRide(allRides[index], participantCount, index);
+                    btn.style.display = "none";
+                })
+            })
         })
             
         : days[index].addEventListener('click', () => { /* jos valittu pv ei ole kirjatuissa kyydeissä */
@@ -190,18 +210,18 @@ markers.addTo(map);
 
 // Esimerkki rekisteröidyistä kyydeistä. Uudet kyydit rekisteröidään tänne
 let allRides = [
-    { startLocation: 'Helsinki', destination: 'Turku', cost: '10€', startDay: '20.11.2023', startTime: '08:00', location: [60.1699, 24.9384] },
-    { startLocation: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '20.11.2023', startTime: '09:30', location: [61.4978, 23.7610] },
-    { startLocation: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startDay: '1.11.2023', startTime: '10:45', location: [62.879, 27.678] },
-    { startLocation: 'Pihtipudas', destination: 'Pyhäjärvi', cost: '8€', startDay: '12.11.2023', startTime: '12:15', location: [63.445, 25.766] },
-    { startLocation: 'Ylivieska', destination: 'Kempele', cost: 'Free', startDay: '1.12.2023', startTime: '14:00', location: [64.128, 24.547] }
+    { id: 1, startLocation: 'Helsinki', destination: 'Turku', cost: '10€', startDay: '20.11.2023', startTime: '08:00', location: [60.1699, 24.9384], participants: 0 },
+    { id: 2, startLocation: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '20.11.2023', startTime: '09:30', location: [61.4978, 23.7610], participants: 0 },
+    { id: 3, startLocation: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startDay: '1.11.2023', startTime: '10:45', location: [62.879, 27.678], participants: 0 },
+    { id: 4, startLocation: 'Pihtipudas', destination: 'Pyhäjärvi', cost: '8€', startDay: '12.11.2023', startTime: '12:15', location: [63.445, 25.766], participants: 0 },
+    { id: 5, startLocation: 'Ylivieska', destination: 'Kempele', cost: 'Free', startDay: '1.12.2023', startTime: '14:00', location: [64.128, 24.547], participants: 0 }
 ];
 
 // Kyytien renderöinti kartalle ja taulukkoon
 function renderRides(ride) {
     let marker = L.marker(ride.location);
     marker.addTo(markers);
-    marker.bindPopup(`${ride.startLocation} -> ${ride.destination}, Cost: ${ride.cost}, Start Day: ${ride.startDay}, Start Time: ${ride.startTime}`);
+    marker.bindPopup(`${ride.startLocation} -> ${ride.destination}, Cost: ${ride.cost}, Start Day: ${ride.startDay}, Start Time: ${ride.startTime}, <br> <i class="fa-regular fa-user participantCount"> ${ride.participants} </i>`);
 
     let rideTable = document.getElementById('ride-table');
     let tbody = rideTable.getElementsByTagName('tbody')[0];
@@ -212,12 +232,14 @@ function renderRides(ride) {
     let cell3 = row.insertCell(2);
     let cell4 = row.insertCell(3);
     let cell5 = row.insertCell(4);
+    let cell6 = row.insertCell(5);
 
     cell1.textContent = ride.startLocation;
     cell2.textContent = ride.destination;
     cell3.textContent = ride.cost;
     cell4.textContent = ride.startDay;
     cell5.textContent = ride.startTime;
+    cell6.textContent = ride.participants;
 }
 
  // Alustava kyytien merkintä kartalle
@@ -295,7 +317,7 @@ registerBtn.addEventListener('click', function() {
     const coordinates = clickEventCoordinates;
     const marker = L.marker(coordinates);
     marker.addTo(markers);
-    marker.bindPopup(`${startLocation} -> ${destination}, Cost: ${cost}, Start Day: ${startDay}, Start Time: ${startTime}`);
+    marker.bindPopup(`${startLocation} -> ${destination}, Cost: ${cost}, Start Day: ${startDay}, Start Time: ${startTime}, <br> <i class="fa-regular fa-user participantCount"> ${ride.participants} </i>`);
     
     const newRide = {
         startLocation: startLocation,
@@ -303,7 +325,8 @@ registerBtn.addEventListener('click', function() {
         cost: cost,
         startDay: startDay,
         startTime: startTime,
-        location: coordinates
+        location: coordinates,
+        participants: 0
     };
 
     markers.clearLayers();
@@ -336,3 +359,17 @@ updateRideList(rideList);
 }
 
 initCalendar() /* kalenterin kutsu kaikkien arvojen kanssa niin saa kirjattua kyydit */
+
+/* KYYTIIN LIITTYMINEN */
+
+function joinRide(ride, participantCount, rideIndex) {
+    ride.participants++;
+    participantCount.textContent = `${ride.participants}`;
+    allRides[rideIndex] = ride;
+    console.log("Liitytty kyytiin:", ride);
+    participantCount.closest(".calendar-event").insertAdjacentHTML("beforeend", "<p>Kyytiin liitytty onnistuneesti</p>");
+
+    let myRides = JSON.parse(localStorage.getItem("myRides")) || [];
+    myRides.push(ride);
+    localStorage.setItem("myRides", JSON.stringify(myRides));
+}
