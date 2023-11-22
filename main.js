@@ -221,7 +221,7 @@ let allRides = [
 function renderRides(ride) {
     let marker = L.marker(ride.location);
     marker.addTo(markers);
-    marker.bindPopup(`${ride.startLocation} -> ${ride.destination}, Cost: ${ride.cost}, Start Day: ${ride.startDay}, Start Time: ${ride.startTime}, <br> <i class="fa-regular fa-user participantCount"> ${ride.participants} </i>`);
+    marker.bindPopup(`${ride.startLocation} -> ${ride.destination}, Cost: ${ride.cost}, Start Day: ${ride.startDay}, Start Time: ${ride.startTime}, Participants: ${ride.participants}`);
 
     let rideTable = document.getElementById('ride-table');
     let tbody = rideTable.getElementsByTagName('tbody')[0];
@@ -317,9 +317,10 @@ registerBtn.addEventListener('click', function() {
     const coordinates = clickEventCoordinates;
     const marker = L.marker(coordinates);
     marker.addTo(markers);
-    marker.bindPopup(`${startLocation} -> ${destination}, Cost: ${cost}, Start Day: ${startDay}, Start Time: ${startTime}, <br> <i class="fa-regular fa-user participantCount"> ${ride.participants} </i>`);
+    marker.bindPopup(`${startLocation} -> ${destination}, Cost: ${cost}, Start Day: ${startDay}, Start Time: ${startTime}`);
     
     const newRide = {
+        id: allRides.length + 1,
         startLocation: startLocation,
         destination: destination,
         cost: cost,
@@ -329,18 +330,24 @@ registerBtn.addEventListener('click', function() {
         participants: 0
     };
 
-    markers.clearLayers();
     allRides.push(newRide);
-    let tbody = document.getElementById('ride-table').getElementsByTagName('tbody')[0];
-    tbody.innerHTML = '';
-    allRides.forEach(renderRides);
     startLocationInput.value = "";
     destinationInput.value = "";
     costInput.value = "";
     startDayInput.value = "";
     startTimeInput.value = "";
     registerModal.style.display = 'none';
+    updateMap();
+    console.log(allRides)
 });
+
+// updateMap() voi käyttää aina kun tarvitsee päivittää kyytilistaa
+function updateMap() {
+    markers.clearLayers();
+    let tbody = document.getElementById('ride-table').getElementsByTagName('tbody')[0];
+    tbody.innerHTML = '';
+    allRides.forEach(renderRides);
+}
 
 // Kyytien haku
 function searchNearbyRides(coordinates) {
@@ -372,4 +379,5 @@ function joinRide(ride, participantCount, rideIndex) {
     let myRides = JSON.parse(localStorage.getItem("myRides")) || [];
     myRides.push(ride);
     localStorage.setItem("myRides", JSON.stringify(myRides));
+    updateMap();
 }
