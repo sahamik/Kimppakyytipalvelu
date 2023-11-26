@@ -242,10 +242,11 @@ function renderRides(ride) {
     cell6.textContent = ride.participants;
 }
 
- // Alustava kyytien merkintä kartalle
+// Alustava kyytien merkintä kartalle
 allRides.forEach(renderRides);
 
-function updateRideList(rides) {
+// Päivittää listan jossa näkyy lähellä olevat kyydit (Nearby Rides)
+function updateNearbyRideList(rides) {
     let rideListElement = document.getElementById('ride-list');   
     rideListElement.innerHTML = '';        
     if (rides) {
@@ -255,6 +256,22 @@ function updateRideList(rides) {
             rideListElement.appendChild(listItem);
         });
     }
+}
+
+// Filtteröi kyyti taulukon startLocation mukaan
+function filterRides() {
+    let startLocationFilter = document.getElementById('startLocationFilter').value.toLowerCase();
+    let filteredRides = allRides.filter(ride => ride.startLocation.toLowerCase().includes(startLocationFilter));
+    clearTable();
+    markers.clearLayers();
+    filteredRides.forEach(renderRides);
+}
+
+// Filtterin resetointi, toimii myös pyyhkimällä filter input field tyhjäksi
+function resetFilter() {
+    document.getElementById('startLocationFilter').value = '';
+    clearTable();
+    updateMap();
 }
 
 const registerModal = document.getElementById('registerModal');
@@ -338,15 +355,20 @@ registerBtn.addEventListener('click', function() {
     startTimeInput.value = "";
     registerModal.style.display = 'none';
     updateMap();
-    console.log(allRides)
 });
 
-// updateMap() voi käyttää aina kun tarvitsee päivittää kyytilistaa
+// updateMap() voi käyttää aina kun tarvitsee päivittää kyytitaulukkoa
 function updateMap() {
     markers.clearLayers();
     let tbody = document.getElementById('ride-table').getElementsByTagName('tbody')[0];
     tbody.innerHTML = '';
     allRides.forEach(renderRides);
+}
+
+// Ylimääräinen kyytitaulukon tyhjennys joka ei renderöi kyytejä uudestaan
+function clearTable() {
+    let tbody = document.getElementById('ride-table').getElementsByTagName('tbody')[0];
+    tbody.innerHTML = '';
 }
 
 // Kyytien haku
@@ -362,7 +384,7 @@ function searchNearbyRides(coordinates) {
     }
 });
 
-updateRideList(rideList);
+updateNearbyRideList(rideList);
 }
 
 initCalendar() /* kalenterin kutsu kaikkien arvojen kanssa niin saa kirjattua kyydit */

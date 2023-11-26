@@ -74,14 +74,14 @@
             </ul>
         </div>
     </div>
-    <!-- karttaa klikatessa avautuu modal window UI -->
+    <!-- Karttaa klikatessa avautuu modal window UI -->
     <div id="mapActionModal" class="modal">
         <div class="modal-content">
             <button id="registerActionBtn">Register new ride</button>
             <button id="searchActionBtn">Search nearby rides</button>
         </div>
     </div>
-    <!-- toinen modal kyydin rekisteröintiin -->
+    <!-- Toinen modal kyydin rekisteröintiin -->
     <div id="registerModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
@@ -97,6 +97,12 @@
             <input type="text" id="startTime" placeholder="Enter start time"><br>
             <button id="registerBtn">Register Ride</button>
         </div>
+    </div>
+    <!-- Kyytitaulukon filtteröinti -->
+    <div id="ride-filter-div">
+        <label for="startLocationFilter">Filter by Start Location:</label>
+        <input type="text" id="startLocationFilter" oninput="filterRides()">
+        <button id="reset-filter-button" onclick="resetFilter()">Reset Filter</button>
     </div>
     <div id="ride-list-all">
         <!-- Kaikki kyydit -->
