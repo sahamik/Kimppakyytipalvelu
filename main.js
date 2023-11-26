@@ -105,13 +105,13 @@ function showEvents(currMoDates) {
             eventDay.innerHTML = `${weekdays[today.getDay()]}`;
             eventDate.innerHTML = `${day} <small>today</small>`;
 
-            allRides.forEach((ride) => {
+            allRides.forEach((ride, rideIndex) => {
                 if (ride.startDay === day) {
                     events += `<div class="calendar-event">
                     <p>${ride.startLocation} -> ${ride.destination}</p>
                     <p>time: ${ride.startTime}</p>
                     <p>cost: ${ride.cost}</p>
-                    <p><i class="fa-regular fa-user participantCount"> ${ride.participants} </i><button class="joinRideBtn" id="joinRideBtn">join</button></p>
+                    <p><i class="fa-regular fa-user participantCount" dataRideIndex="${rideIndex}"> ${ride.participants} </i><button class="joinRideBtn" dataRideIndex="${rideIndex}">join</button></p>
                     </div>`
                 }
             })
@@ -119,10 +119,11 @@ function showEvents(currMoDates) {
 
             /* Tapahtumakuuntelijat liity painikkeille. Kutsutaan joinRide funktiota kun klikataan eventin liity painiketta. Piilotetaan liity painike tämän jälkeen. */
             let joinButtons = document.querySelectorAll(".joinRideBtn");
-            joinButtons.forEach((btn, index) => {
+            joinButtons.forEach((btn) => {
                 btn.addEventListener("click", function()  {
-                    let participantCount = document.querySelectorAll(".participantCount")[index];
-                    joinRide(allRides[index], participantCount, index);
+                    let rideIndex = this.getAttribute("dataRideIndex");
+                    let participantCount = document.querySelector(`.participantCount[dataRideIndex="${rideIndex}"]`);
+                    joinRide(allRides[rideIndex], participantCount, rideIndex);
                     btn.style.display = "none";
                 })
             })
@@ -137,13 +138,13 @@ function showEvents(currMoDates) {
             eventDate.innerHTML = `${day}`
             events = ""
             allEvents.innerHTML = ""
-            allRides.forEach(r => {
+            allRides.forEach((r, rideIndex) => {
                 r.startDay === day
                 ? events += `<div class="calendar-event">
                 <p>${r.startLocation} -> ${r.destination}</p>
                 <p>time: ${r.startTime}</p>
                 <p>cost: ${r.cost}</p>
-                <p><i class="fa-regular fa-user participantCount"> ${'0'} </i><button class="joinRideBtn">join</button></p>
+                <p><i class="fa-regular fa-user participantCount" dataRideIndex="${rideIndex}"> ${r.participants} </i><button class="joinRideBtn" dataRideIndex="${rideIndex}">join</button></p>
                 </div>`
                 : null
             })
@@ -151,10 +152,11 @@ function showEvents(currMoDates) {
 
             /* Tapahtumakuuntelijat liity painikkeille. Kutsutaan joinRide funktiota kun klikataan eventin liity painiketta. Piilotetaan liity painike tämän jälkeen. */
             let joinButtons = document.querySelectorAll(".joinRideBtn");
-            joinButtons.forEach((btn, index) => {
+            joinButtons.forEach((btn) => {
                 btn.addEventListener("click", function()  {
-                    let participantCount = document.querySelectorAll(".participantCount")[index];
-                    joinRide(allRides[index], participantCount, index);
+                    let rideIndex = this.getAttribute("dataRideIndex");
+                    let participantCount = document.querySelector(`.participantCount[dataRideIndex="${rideIndex}"]`);
+                    joinRide(allRides[rideIndex], participantCount, rideIndex);
                     btn.style.display = "none";
                 })
             })
@@ -392,14 +394,25 @@ initCalendar() /* kalenterin kutsu kaikkien arvojen kanssa niin saa kirjattua ky
 /* KYYTIIN LIITTYMINEN */
 
 function joinRide(ride, participantCount, rideIndex) {
-    ride.participants++;
-    participantCount.textContent = `${ride.participants}`;
-    allRides[rideIndex] = ride;
-    console.log("Liitytty kyytiin:", ride);
-    participantCount.closest(".calendar-event").insertAdjacentHTML("beforeend", "<p>Kyytiin liitytty onnistuneesti</p>");
-
+    // Tutkitaan onko käyttäjä jo liittynyt kyytiin ja jos on, ei pysty liittymään uudestaan.
     let myRides = JSON.parse(localStorage.getItem("myRides")) || [];
-    myRides.push(ride);
-    localStorage.setItem("myRides", JSON.stringify(myRides));
-    updateMap();
+    let joinedRides = myRides.find((r) => r.rideIndex === rideIndex);
+
+    if (joinedRides) {
+        participantCount.closest(".calendar-event").insertAdjacentHTML("beforeend", "<p>Olet jo liittynyt tähän kyytiin!</p>");
+        console.log("Olet jo liittynyt tähän kyytiin!");
+        return;
+    } else {
+        // Jos ei ole liittynyt, kasvatetaan osallistujamäärää yhdellä, annetaan ilmoitus kyytiin liittymisestä ja tallennetaan kyyti myRides taulukkoon.
+        ride.participants++;
+
+        participantCount.textContent = `${ride.participants}`;
+        allRides[rideIndex] = ride;
+        console.log("Liitytty kyytiin: ", ride);
+        participantCount.closest(".calendar-event").insertAdjacentHTML("beforeend", "<p>Kyytiin liitytty onnistuneesti</p>");
+
+        myRides.push( {ride: ride, rideIndex: rideIndex });
+        localStorage.setItem("myRides", JSON.stringify(myRides));
+        updateMap();
+    }
 }
