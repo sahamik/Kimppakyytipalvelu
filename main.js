@@ -347,6 +347,7 @@ registerBtn.addEventListener('click', function() {
     startTimeInput.value = "";
     registerModal.style.display = 'none';
     updateMap();
+    initCalendar();
 });
 
 // updateMap() voi käyttää aina kun tarvitsee päivittää kyytitaulukkoa
