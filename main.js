@@ -116,17 +116,6 @@ function showEvents(currMoDates) {
                 }
             })
             allEvents.innerHTML = events
-
-            /* Tapahtumakuuntelijat liity painikkeille. Kutsutaan joinRide funktiota kun klikataan eventin liity painiketta. Piilotetaan liity painike tämän jälkeen. */
-            let joinButtons = document.querySelectorAll(".joinRideBtn");
-            joinButtons.forEach((btn) => {
-                btn.addEventListener("click", function()  {
-                    let rideIndex = this.getAttribute("dataRideIndex");
-                    let participantCount = document.querySelector(`.participantCount[dataRideIndex="${rideIndex}"]`);
-                    joinRide(allRides[rideIndex], participantCount, rideIndex);
-                    btn.style.display = "none";
-                })
-            })
         }
 
         allRides.find( ride => ride.startDay === day )
@@ -158,6 +147,7 @@ function showEvents(currMoDates) {
                     let participantCount = document.querySelector(`.participantCount[dataRideIndex="${rideIndex}"]`);
                     joinRide(allRides[rideIndex], participantCount, rideIndex);
                     btn.style.display = "none";
+                    showMyRides();
                 })
             })
         })
@@ -415,4 +405,21 @@ function joinRide(ride, participantCount, rideIndex) {
         localStorage.setItem("myRides", JSON.stringify(myRides));
         updateMap();
     }
+}
+
+// Omien kyytien näyttäminen
+function showMyRides() {
+    let myRides = JSON.parse(localStorage.getItem("myRides")) || [];
+    let myRidesElement = document.querySelector(".my-rides");
+    let myRidesList = document.createElement("ul");
+
+    myRidesElement.innerHTML = "";
+
+    myRides.forEach(r => {
+        let rideItem = document.createElement("li");
+        rideItem.textContent = `${r.ride.startLocation} -> ${r.ride.destination} (${r.ride.startTime}), Cost: ${r.ride.cost}`;
+        myRidesList.appendChild(rideItem);
+
+        myRidesElement.appendChild(myRidesList);
+    });
 }
