@@ -204,6 +204,14 @@
 }
 /* CARPOOL NOTES ENDS */
 
+/* Omat kyydit tyylit */
+
+.my-rides-container {
+    display: block;
+    position: relative;
+    float: right;
+}
+
 /* Kartta tyylit */
 
 #map-container {
