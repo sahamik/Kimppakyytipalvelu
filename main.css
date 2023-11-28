@@ -359,3 +359,21 @@
     text-decoration: none;
     cursor: pointer;
 }
+
+/* Tyylit uloskirjautumis painikkeelle */
+
+#logOutBtn {
+    position:absolute;
+    right: 10px;
+    top: 5px;
+    border-radius: 8px;
+    border: solid;
+    border-color: #4a9b38;
+    background: var(--primary-clr);
+    padding: 2px;
+    cursor: pointer;
+}
+
+#logOutBtn:hover {
+    background: linear-gradient(to top, #4a9b38, #69D84f);
+}

@@ -424,3 +424,10 @@ function showMyRides() {
         myRidesElement.appendChild(myRidesList);
     });
 }
+
+// Uloskirjautuminen sovelluksesta
+document.getElementById("logOutBtn").addEventListener("click", logOut);
+
+function logOut() {
+    window.location.href = "index.html";
+}
