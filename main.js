@@ -210,7 +210,7 @@ let allRides = [
 ];
 
 // Kyytien renderöinti kartalle ja taulukkoon
-function renderRides(ride) {
+function renderRides(ride, rideIndex) {
     let marker = L.marker(ride.location);
     marker.addTo(markers);
     marker.bindPopup(`${ride.startLocation} -> ${ride.destination}, Cost: ${ride.cost}, Start Day: ${ride.startDay}, Start Time: ${ride.startTime}, Participants: ${ride.participants}`);
@@ -225,6 +225,7 @@ function renderRides(ride) {
     let cell4 = row.insertCell(3);
     let cell5 = row.insertCell(4);
     let cell6 = row.insertCell(5);
+    let cell7 = row.insertCell(6);
 
     cell1.textContent = ride.startLocation;
     cell2.textContent = ride.destination;
@@ -232,6 +233,35 @@ function renderRides(ride) {
     cell4.textContent = ride.startDay;
     cell5.textContent = ride.startTime;
     cell6.textContent = ride.participants;
+
+    cell7.classList.add('remove-ride-cell');
+    let deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.className = 'delete-button';
+    deleteButton.addEventListener('click', function() {
+        deleteRide(rideIndex);
+    });
+    cell7.appendChild(deleteButton);
+}
+
+// Kyydin poisto allRides, myRides, kartalta ja kalenterista
+function deleteRide(rideIndex) {
+    const deletedRide = allRides[rideIndex];
+    allRides.splice(rideIndex, 1);
+    const myRides = JSON.parse(localStorage.getItem("myRides")) || [];
+    const updatedMyRides = myRides.filter((r) => r.ride.id !== deletedRide.id);
+    localStorage.setItem("myRides", JSON.stringify(updatedMyRides));
+
+    updateMap();
+    const dateCell = document.querySelector(`.day[data-date="${deletedRide.startDay}"]`);
+    if (dateCell) {
+        const carIcon = dateCell.querySelector('.fa-car');
+        if (carIcon) {
+            carIcon.remove();
+        }
+    }
+    initCalendar();
+    showMyRides();
 }
 
 // Alustava kyytien merkintä kartalle
