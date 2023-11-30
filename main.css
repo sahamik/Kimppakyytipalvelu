@@ -300,7 +300,23 @@
     background: linear-gradient(to top, rgb(228, 76, 59),rgb(217, 145, 82));
 }
 
-.remove-ride-cell {
+.join-button {
+    margin-left: 10px;
+    padding: 3px;
+    width: 90px;
+    border-radius: 5px;
+    border: solid;
+    border-color: #4a9b38;
+    background: linear-gradient(to top, #4a9b38, #69D84f);
+    font-weight: bold;
+    cursor: pointer;    
+}
+
+.join-button:hover {
+    background: linear-gradient(to top, #3e822f, #54ae3f);
+}
+
+.remove-ride-cell, .join-ride-cell {
     width: 125px;
 }
 

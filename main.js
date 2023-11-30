@@ -226,6 +226,7 @@ function renderRides(ride, rideIndex) {
     let cell5 = row.insertCell(4);
     let cell6 = row.insertCell(5);
     let cell7 = row.insertCell(6);
+    let cell8 = row.insertCell(7);
 
     cell1.textContent = ride.startLocation;
     cell2.textContent = ride.destination;
@@ -234,14 +235,38 @@ function renderRides(ride, rideIndex) {
     cell5.textContent = ride.startTime;
     cell6.textContent = ride.participants;
 
-    cell7.classList.add('remove-ride-cell');
+    // Kyytiin liittymisnapin luokan luominen ja päivitys
+    cell7.classList.add('join-ride-cell');
+    let joinButton = document.createElement('button');
+    joinButton.className = 'join-button';
+    cell7.appendChild(joinButton);
+    updateJoinButtonState(joinButton, ride, rideIndex);   
+    joinButton.addEventListener('click', function() {
+        joinRideTable(allRides[rideIndex], cell6, rideIndex);
+        updateJoinButtonState(joinButton, allRides[rideIndex], rideIndex);
+    });
+
+    // // Kyydin poitonapin luokan luominen
+    cell8.classList.add('remove-ride-cell');
     let deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
     deleteButton.className = 'delete-button';
     deleteButton.addEventListener('click', function() {
         deleteRide(rideIndex);
     });
-    cell7.appendChild(deleteButton);
+    cell8.appendChild(deleteButton);
+}
+
+// Muuttaa Join napin Leave napiksi ja takaisin
+function updateJoinButtonState(button, ride, rideIndex) {
+    let myRides = JSON.parse(localStorage.getItem("myRides")) || [];
+    let joinedRides = myRides.find((r) => r.rideIndex === rideIndex);
+
+    if (joinedRides) {
+        button.textContent = 'Leave';
+    } else {
+        button.textContent = 'Join';
+    }
 }
 
 // Kyydin poisto allRides, myRides, kartalta ja kalenterista
@@ -335,6 +360,11 @@ searchActionBtn.addEventListener('click', function() {
 
 // Modal rekisteröinti nappi, lisää uuden kyydin allRides arrayhin
 registerBtn.addEventListener('click', function() {
+    registerRide()
+});
+
+// Uuden kyydin rekisteröinti
+function registerRide() {
     const startLocationInput = document.getElementById('startLocation');
     const destinationInput = document.getElementById('destination');
     const costInput = document.getElementById('cost');
@@ -378,7 +408,7 @@ registerBtn.addEventListener('click', function() {
     registerModal.style.display = 'none';
     updateMap();
     initCalendar();
-});
+};
 
 // updateMap() voi käyttää aina kun tarvitsee päivittää kyytitaulukkoa
 function updateMap() {
@@ -415,6 +445,7 @@ initCalendar() /* kalenterin kutsu kaikkien arvojen kanssa niin saa kirjattua ky
 /* KYYTIIN LIITTYMINEN */
 
 function joinRide(ride, participantCount, rideIndex) {
+    rideIndex = parseInt(rideIndex, 10);   
     // Tutkitaan onko käyttäjä jo liittynyt kyytiin ja jos on, ei pysty liittymään uudestaan.
     let myRides = JSON.parse(localStorage.getItem("myRides")) || [];
     let joinedRides = myRides.find((r) => r.rideIndex === rideIndex);
@@ -436,6 +467,37 @@ function joinRide(ride, participantCount, rideIndex) {
         localStorage.setItem("myRides", JSON.stringify(myRides));
         updateMap();
     }
+}
+
+// Kyyteihin liittymisen hallinta erikseen kyytilistassa
+function joinRideTable(ride, participantCount, rideIndex) {
+    let myRides = JSON.parse(localStorage.getItem("myRides")) || [];
+    let joinedRides = myRides.find((r) => r.rideIndex === rideIndex);
+    
+    if (joinedRides) {
+        myRides = myRides.filter((r) => r.rideIndex !== rideIndex);
+        localStorage.setItem("myRides", JSON.stringify(myRides));
+        let joinButton = document.querySelector(`.joinRideBtn[dataRideIndex="${rideIndex}"]`);
+        
+        if (joinButton) {
+            joinButton.textContent = "Join";
+        }
+        ride.participants--;
+        participantCount.textContent = `${ride.participants}`;
+    } else {
+        ride.participants++;
+        participantCount.textContent = `${ride.participants}`;
+        allRides[rideIndex] = ride;
+        let joinButton = document.querySelector(`.joinRideBtn[dataRideIndex="${rideIndex}"]`);
+        
+        if (joinButton) {
+            joinButton.textContent = "Leave";
+        }
+        myRides.push( {ride: ride, rideIndex: rideIndex });
+        localStorage.setItem("myRides", JSON.stringify(myRides));
+    }
+    updateMap();
+    showMyRides();
 }
 
 // Omien kyytien näyttäminen
