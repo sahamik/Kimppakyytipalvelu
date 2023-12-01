@@ -246,7 +246,7 @@ function renderRides(ride, rideIndex) {
         updateJoinButtonState(joinButton, allRides[rideIndex], rideIndex);
     });
 
-    // // Kyydin poitonapin luokan luominen
+    // Kyydin poistonapin luokan luominen
     cell8.classList.add('remove-ride-cell');
     let deleteButton = document.createElement('button');
     deleteButton.textContent = 'Delete';
@@ -294,9 +294,13 @@ allRides.forEach(renderRides);
 
 // Päivittää listan jossa näkyy lähellä olevat kyydit (Nearby Rides)
 function updateNearbyRideList(rides) {
-    let rideListElement = document.getElementById('ride-list');   
-    rideListElement.innerHTML = '';        
-    if (rides) {
+    let rideListElement = document.getElementById('ride-list');
+    rideListElement.innerHTML = '';
+    if (!rides || rides.length === 0) {
+        let noRidesMessage = document.createElement('li');
+        noRidesMessage.textContent = 'No nearby rides';
+        rideListElement.appendChild(noRidesMessage);
+    } else {      
         rides.forEach(function(ride) {
             let listItem = document.createElement('li');
             listItem.textContent = ride.startLocation + ' (' + (ride.distance / 1000).toFixed(2) + ' km away)';

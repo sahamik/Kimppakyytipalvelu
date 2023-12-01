@@ -241,6 +241,10 @@
 
 #ride-list {
     margin-left: 10px;
+    border: solid;
+    padding: 10px;
+    max-width: fit-content;
+    border-color: #69D84f;
 }
 
 #ride-table {
