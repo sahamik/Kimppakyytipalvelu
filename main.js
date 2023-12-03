@@ -11,9 +11,7 @@ let joinedRides = [1,4]
 /* necessary components for the calendar */
 const  calendar = document.querySelector('.calendar'), /* kalenteri */
     date = document.querySelector('.date'), /* kalenterin otsikko (päiväys) */
-    prev = document.querySelector('.prev'), /* < icon navigointi taaksepäin */
-    daysContainer = document.querySelector('.days'),
-    next = document.querySelector('.next'); 
+    daysContainer = document.querySelector('.days'); /* days osio */
 
 const selectedDay = '';
 
@@ -49,7 +47,7 @@ function initCalendar() {
     daysContainer.innerHTML = ''
     currentMonthDates = [];
 
-    date.innerHTML = `${months[month]} ${year}`
+    date.innerHTML = `${months[month]} ${year}` /* kalenterin otsikko osuus */
 
     /* current month length */
     let prevDays = new Date(year, month, 0).getDay();
@@ -74,7 +72,7 @@ function initCalendar() {
     
     /* setting data in currentMonthDates array */
     if ( prevDays > 0 ) {
-        let monthCheck = month < 0 ? 11 : month /* jos aikaisempikuukausi on viimevuodelta */
+        let monthCheck = month < 0 ? 11 : month /* jos aikaisempi kuukausi on viimevuodelta */
         let yearCheck = monthCheck === 0 ? year - 1 : year /* jos monthCheck aikaisemmalle vuodelle on vuosi - 1 */
         for ( let i = prevMonthLength - prevDays + 1; i <= prevMonthLength; i++) {
             currentMonthDates.push({
@@ -84,12 +82,12 @@ function initCalendar() {
         }
     }
     for ( let i = 1; i <= currMonthLength; i++) {
-        today.getDate() === i && today.getMonth() === month && today.getFullYear() === year
+        today.getDate() === i && today.getMonth() === month && today.getFullYear() === year /* asettaa tämän päivät today classiin ja muuten day classit */
             ? currentMonthDates.push({class: ['day', 'today'], date:`${i}.${month+1}.${year}`})
             : currentMonthDates.push({class: ['day'], date:`${i}.${month+1}.${year}`})
     }
     if ( nextDays > 0 && nextDays < 7 ) {
-        let monthCheck = month === 11 ? 1 : month + 1 /* jos aikaisempikuukausi on viimevuodelta */
+        let monthCheck = month === 11 ? 1 : month + 1 /* jos seuraava kuukausi on seuraavalta vuodelta */
         let yearCheck = month === 11 ? year + 1 : year
         for ( let i = 1; i <= nextDays; i++ ) {
             currentMonthDates.push({
@@ -104,20 +102,20 @@ function initCalendar() {
         let day = date.date.split('.')[0];
         let divE = document.createElement('div')
         divE.innerHTML = day
-        let carE = document.createElement('i')
+        let carE = document.createElement('i') /* auto icon elementti */
         carE.classList.add('fa-solid', 'fa-car')
 
         /* setting classes */
         date.class.length > 1
-            ? date.class.forEach(c => {divE.classList.add(c)})
+            ? date.class.forEach(c => {divE.classList.add(c)}) /* jos luokkia enemmän kuin 1 tehdään forEach */
             : divE.classList.add(date.class[0])
 
-        date.date === activeDay
+        date.date === activeDay /* jos päivä on aktiivinen */
             ? divE.classList.add('active')
             : null
 
-        /* settng rides */
-        allRides.find(ride => ride.startDay === date.date)
+        /* setting rides */
+        allRides.find(ride => ride.startDay === date.date) /* jos päivä on allRideissa */
             ? divE.appendChild(carE)
             : null
 
@@ -132,30 +130,28 @@ function initCalendar() {
             divE.addEventListener('click', () => {navActive(date)})
         }
 
-        daysContainer.appendChild(divE)
+        daysContainer.appendChild(divE) /* lisää valmiin elementin days osioon */
     });
 
-    /* checking events and add event listeners */
-    let calendarDays = document.querySelectorAll('.day');
     showCarpoolEvents();
 }
 
 function showCarpoolEvents () {
-    let eventDay = document.querySelector('.event-day');
-    let eventDate = document.querySelector('.event-date');
-    let allEvents = document.querySelector('.calendar-events');
+    let eventDay = document.querySelector('.event-day'); /* notes otsikko viikonpäivä */
+    let eventDate = document.querySelector('.event-date');  /* notes otsikko päivämäärä */
+    let allEvents = document.querySelector('.calendar-events'); /* kaikki näytettävät eventit */
 
     let indexDay = activeDay.split('.').map((d) => Number(d))
-    let indexWeekday = activeDay === today 
-        ?  new Date(`${indexDay[2]}-${indexDay[1]}-${indexDay[0]}`).getDay()
-        : new Date(`${indexDay[2]}-${indexDay[1]}-${indexDay[0]}`).getDay();
+    let indexWeekday = activeDay === today /* viikonpäivä */
+        ? new Date(`${indexDay[2]}-${indexDay[1]}-${indexDay[0]}`).getDay()
+        : null
     eventDay.innerHTML = weekdays[indexWeekday]
 
     eventDate.innerHTML = activeDay
 
-    allEvents.innerHTML = ''
-    allRides.find(r => r.startDay === activeDay)
-        ? allRides.forEach((ride) => {
+    allEvents.innerHTML = '' /* tyhjää eventtiosion */
+    allRides.find(r => r.startDay === activeDay) /* jos valittuna päivänä on eventtejä */
+        ? allRides.forEach((ride) => { /* käydään eventit läpi */
             if (ride.startDay === activeDay) {
                 let divE = document.createElement('div')
                 divE.classList.add('calendar-event')
@@ -167,12 +163,12 @@ function showCarpoolEvents () {
 
                 divE.innerHTML = eventData
 
-                if (joinedRides.includes(ride.id)) { 
+                if (joinedRides.includes(ride.id)) { /* jos valittuna päivänä on joinattuja kyytejä on mahdollista leave */
                     let btnE = document.createElement('button');
                     btnE.innerHTML = 'leave'
                     btnE.addEventListener('click', () => allRidesUpdater(['leave', ride.id]))
                     divE.lastChild.appendChild(btnE)
-                 } else {
+                 } else {  /* jos valittuna päivänä ei ole joinattuja kyytejä on mahdollista join */
                     let btnE = document.createElement('button');
                     btnE.innerHTML = 'join'
                     btnE.addEventListener('click', () => allRidesUpdater(['join', ride.id]))
@@ -182,11 +178,11 @@ function showCarpoolEvents () {
                 allEvents.appendChild(divE)
             }
         })
-        : allEvents.innerHTML = 'no events'
+        : allEvents.innerHTML = 'no events' /* jos ei löydy eventtejä */
 
 }
 
-function navPrevMonth () {
+function navPrevMonth () { /* navigoi aikaisempaan kuukauteen ja setuppaa kalenterin */
     month--;
     if (month < 0) {
         month = 11;
@@ -195,7 +191,7 @@ function navPrevMonth () {
     initCalendar();
  }
 
-function navNextMonth () { 
+function navNextMonth () {  /* navigoi seuraavaan kuukauteen ja setuppaa kalenterin */
     month++;
     if (month > 11) {
         month = 0;
@@ -204,7 +200,7 @@ function navNextMonth () {
     initCalendar();
  }
 
-function navActive (date) { 
+function navActive (date) { /* asettaa valitun päivän valituksi */
     let days = document.querySelectorAll('.day');
     days.forEach(d => d.classList.remove('active'));
     activeDay = date.date
@@ -212,7 +208,7 @@ function navActive (date) {
  }
 
 /* only updating rides data aka allRides */
-function allRidesUpdater(data) {
+function allRidesUpdater(data) { 
     if ( data[0] === 'add' ) { console.log('add'); }
 
     if ( data[0] === 'leave' ) { 
@@ -228,6 +224,7 @@ function allRidesUpdater(data) {
     initCalendar();
 }
 
+/* kalenterin nuolet < > */
 document.querySelector('.prev').addEventListener('click', () => { navPrevMonth() })
 document.querySelector('.next').addEventListener('click', () => { navNextMonth() })
 
