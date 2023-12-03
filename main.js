@@ -17,7 +17,7 @@ const selectedDay = '';
 
 /* necessary data for setting current month */
 let today = new Date(),
-    activeDay = `${today.getDate()}.${today.getMonth()}.${today.getFullYear()}`,
+    activeDay = `${today.getDate()+2}.${today.getMonth()}.${today.getFullYear()}`,
     month = today.getMonth(),
     year = today.getFullYear(),
     weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
