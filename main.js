@@ -1,193 +1,226 @@
-const calendar = document.querySelector('.calendar'), /* kalenteri */
-        date = document.querySelector('.date'), /* kalenterin otsikko (päiväys) */
-        daysContainer = document.querySelector('.days'), /* päivät yht */
-        prev = document.querySelector('.prev'), /* < icon navigointi taaksepäin */
-        next = document.querySelector('.next'); /* > icon navigointi eteenpäin */
+let allRides = [
+    { id: 1, startLocation: 'Helsinki', destination: 'Turku', cost: '10€', startDay: '20.12.2023', startTime: '08:00', location: [60.1699, 24.9384], participants: 0, id: 0 },
+    { id: 2, startLocation: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '20.11.2023', startTime: '09:30', location: [61.4978, 23.7610], participants: 0, id: 1 },
+    { id: 3, startLocation: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startDay: '30.11.2023', startTime: '10:45', location: [62.879, 27.678], participants: 0, id: 2 },
+    { id: 4, startLocation: 'Pihtipudas', destination: 'Pyhäjärvi', cost: '8€', startDay: '12.12.2023', startTime: '12:15', location: [63.445, 25.766], participants: 0, id: 3 },
+    { id: 5, startLocation: 'Ylivieska', destination: 'Kempele', cost: 'Free', startDay: '12.12.2023', startTime: '14:00', location: [64.128, 24.547], participants: 0, id: 4 }
+];
 
-const carIconElement = document.createElement('i')
-carIconElement.classList.add('fa-solid', 'fa-car')
+let joinedRides = [1,4]
 
-const eventElement = document.createElement('div')
+/* necessary components for the calendar */
+const  calendar = document.querySelector('.calendar'), /* kalenteri */
+    date = document.querySelector('.date'), /* kalenterin otsikko (päiväys) */
+    prev = document.querySelector('.prev'), /* < icon navigointi taaksepäin */
+    daysContainer = document.querySelector('.days'),
+    next = document.querySelector('.next'); 
 
-let today = new Date();
-let activeDay;
-let month = today.getMonth();
-let year = today.getFullYear();
-let weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-let months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-]
+const selectedDay = '';
 
-/* CALENDAR */
+/* necessary data for setting current month */
+let today = new Date(),
+    activeDay = `${today.getDate()}.${today.getMonth()}.${today.getFullYear()}`,
+    month = today.getMonth(),
+    year = today.getFullYear(),
+    weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    ]
+
+/* console.log(` DEBUG
+    today: [${today.getDate()}]
+    active day: [${activeDay}]
+    month: [${month}] => [${months[month]}] index 11 is last month
+    year: [${year}]
+`) */
+
 function initCalendar() {
-    const eventsToShow = [] 
-    const firstWeekday = new Date(year, month, 0).getDay() + 1; /* kuun ensimmäinen päivä */
-    const lastWeekday = new Date(year, month + 1, 0).getDay(); /* kuun ensimmäinen päivä */
-    const lastDate = new Date(year, month + 1, 0).getDate(); /* kuun viimeinen päivä */
-    const prevLastDay = new Date(year, month, 0).getDate(); /* aikaisemman kuun viimeinen päivä */
-    const prevLastDays = firstWeekday - 1; /* +1  jotta pysytään indexissä */
-    const nextDays = 7 - lastWeekday;
+    daysContainer.innerHTML = ''
+    currentMonthDates = [];
 
-    const currMonth = new Date(year, month + 1).getMonth();
-    const currYear = new Date(year, month).getFullYear();;
+    date.innerHTML = `${months[month]} ${year}`
 
-    date.innerHTML = months[month] + " " + year; /* kuukausi kalenterin yläosaan */
-    let currMoDates = [] /* kaikki päivämäärät pisteellä */
-    let days = " " /* päivien lisäyksen pohja kalenteriin */
+    /* current month length */
+    let prevDays = new Date(year, month, 0).getDay();
+    let prevMonthLength = new Date(year, month, 0).getDate();
+    let currMonthLength = new Date(year, month + 1, 0).getDate();
+    let currMoLastWeekday = new Date(year, month + 1, 0).getDay();
+    let nextDays = 7 - currMoLastWeekday
 
-    /* PREV */
-    if ( firstWeekday > 0 ) {
-        for ( let i = prevLastDay + 1 - prevLastDays; i <= prevLastDay; i++ )
-            { 
-                currMoDates.push(`${i}.${currMonth-1}.${currYear}`);
-                allRides.find(ride => ride.startDay === currMoDates[currMoDates.length - 1]
-                    ? eventsToShow.push(ride) : false ) 
-                ? days += `<div class="day prev-date">${i} <i class="fa-solid fa-car"></i></div>` 
-                : days += `<div class="day prev-date">${i}</div>`;
-            }
-    }
-    /* CURR */
-    for ( let i = 1; i <= lastDate; i++ ) { 
-        currMoDates.push(`${i}.${currMonth}.${currYear}`) 
-        allRides.find(ride => 
-            ride.startDay === currMoDates[currMoDates.length - 1] 
-            ? eventsToShow.push(ride) 
-            : false 
-        ) 
-        ? days += `<div class="day">${i} <i class="fa-solid fa-car"></i></i></div>` 
-        : days += `<div class="day">${i}</div>`;
-    }
-    /* NEXT */
-    if ( nextDays > 0 && nextDays < 7 ) {
-        for ( let i = 1; i <= nextDays; i++ ) { 
-            currMoDates.push(`${i}.${currMonth+1}.${currYear}`) 
-            allRides.find(ride => 
-                ride.startDay === currMoDates[currMoDates.length - 1] 
-                ? eventsToShow.push(ride) : false ) 
-            ? days += `<div class="day next-date">${i} <i class="fa-solid fa-car"></i></i></div>`
-            : days += `<div class="day next-date">${i}</div>`;
+/*     console.log(` DATES OF CURRENT MONTH
+    currYear: [${year}]
+    currMonth: [${month}]
+    prevDays: [${prevDays}]
+    prevMonthLength: [${prevMonthLength}]
+    currMonthFirstWeekday: [${prevDays+1}] => [${weekdays[prevDays + 1]}]
+    currMonthLength: [${currMonthLength}]
+    currMoLastWeekday: [${currMoLastWeekday}] => [${weekdays[currMoLastWeekday]}]
+    nextDays: [${nextDays}]
+    `) */
+
+    /* days in calendar */
+    let days = ''
+    
+    /* setting data in currentMonthDates array */
+    if ( prevDays > 0 ) {
+        let monthCheck = month < 0 ? 11 : month /* jos aikaisempikuukausi on viimevuodelta */
+        let yearCheck = monthCheck === 0 ? year - 1 : year /* jos monthCheck aikaisemmalle vuodelle on vuosi - 1 */
+        for ( let i = prevMonthLength - prevDays + 1; i <= prevMonthLength; i++) {
+            currentMonthDates.push({
+                class: ['day', 'prev-date'], 
+                date:`${i}.${monthCheck}.${yearCheck}`
+            })
         }
     }
-    daysContainer.innerHTML = days;
-    showEvents(currMoDates)
+    for ( let i = 1; i <= currMonthLength; i++) {
+        today.getDate() === i && today.getMonth() === month && today.getFullYear() === year
+            ? currentMonthDates.push({class: ['day', 'today'], date:`${i}.${month+1}.${year}`})
+            : currentMonthDates.push({class: ['day'], date:`${i}.${month+1}.${year}`})
+    }
+    if ( nextDays > 0 && nextDays < 7 ) {
+        let monthCheck = month === 11 ? 1 : month + 1 /* jos aikaisempikuukausi on viimevuodelta */
+        let yearCheck = month === 11 ? year + 1 : year
+        for ( let i = 1; i <= nextDays; i++ ) {
+            currentMonthDates.push({
+                class: ['day', 'next-date'], 
+                date:`${i}.${monthCheck+1}.${yearCheck}`
+            })
+        }
+    }
+
+    /* setting day elements in days */
+    currentMonthDates.forEach(date => {
+        let day = date.date.split('.')[0];
+        let divE = document.createElement('div')
+        divE.innerHTML = day
+        let carE = document.createElement('i')
+        carE.classList.add('fa-solid', 'fa-car')
+
+        /* setting classes */
+        date.class.length > 1
+            ? date.class.forEach(c => {divE.classList.add(c)})
+            : divE.classList.add(date.class[0])
+
+        date.date === activeDay
+            ? divE.classList.add('active')
+            : null
+
+        /* settng rides */
+        allRides.find(ride => ride.startDay === date.date)
+            ? divE.appendChild(carE)
+            : null
+
+        /* setting eventListeners */
+        if ( divE.classList.contains('prev-date') ) {
+            divE.addEventListener('click', () => {navPrevMonth()})
+        }
+        if ( divE.classList.contains('next-date') ) {
+            divE.addEventListener('click', () => {navNextMonth()})
+        }
+        if ( divE.classList.contains('day') ) {
+            divE.addEventListener('click', () => {navActive(date)})
+        }
+
+        daysContainer.appendChild(divE)
+    });
+
+    /* checking events and add event listeners */
+    let calendarDays = document.querySelectorAll('.day');
+    showCarpoolEvents();
 }
 
-function showEvents(currMoDates) {
-    /* needed data
-    console.log(currMoDates)
-    console.log(allRides) */
-    let events = ""
-    /* needed elements */
+function showCarpoolEvents () {
     let eventDay = document.querySelector('.event-day');
     let eventDate = document.querySelector('.event-date');
     let allEvents = document.querySelector('.calendar-events');
-    let days = document.querySelectorAll('.day')
 
+    let indexDay = activeDay.split('.').map((d) => Number(d))
+    let indexWeekday = activeDay === today 
+        ?  new Date(`${indexDay[2]}-${indexDay[1]}-${indexDay[0]}`).getDay()
+        : new Date(`${indexDay[2]}-${indexDay[1]}-${indexDay[0]}`).getDay();
+    eventDay.innerHTML = weekdays[indexWeekday]
 
-    /* click event for all days */
-    currMoDates.forEach((day, index) => {
-        let indexDay = day.split('.').map((d) => Number(d))
-        let indexWeekday = new Date(`${indexDay[2]}-${indexDay[1]}-${indexDay[0]}`).getDay();
+    eventDate.innerHTML = activeDay
 
-        if (day === `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`){ 
-            days[index].classList.add('today');
-            eventDay.innerHTML = `${weekdays[today.getDay()]}`;
-            eventDate.innerHTML = `${day} <small>today</small>`;
+    allEvents.innerHTML = ''
+    allRides.find(r => r.startDay === activeDay)
+        ? allRides.forEach((ride) => {
+            if (ride.startDay === activeDay) {
+                let divE = document.createElement('div')
+                divE.classList.add('calendar-event')
+                
+                let eventData = `<p>${ride.startLocation} -> ${ride.destination}</p>
+                <p>time: ${ride.startTime}</p>
+                <p>cost: ${ride.cost}</p>
+                <p><i class="fa-regular fa-user participantCount"> ${ride.participants} </i></p>`
 
-            allRides.forEach((ride, rideIndex) => {
-                if (ride.startDay === day) {
-                    events += `<div class="calendar-event">
-                    <p>${ride.startLocation} -> ${ride.destination}</p>
-                    <p>time: ${ride.startTime}</p>
-                    <p>cost: ${ride.cost}</p>
-                    <p><i class="fa-regular fa-user participantCount" dataRideIndex="${rideIndex}"> ${ride.participants} </i><button class="joinRideBtn" dataRideIndex="${rideIndex}">join</button></p>
-                    </div>`
-                }
-            })
-            allEvents.innerHTML = events
-        }
+                divE.innerHTML = eventData
 
-        allRides.find( ride => ride.startDay === day )
-        ? days[index].addEventListener('click', () => { /* jos valittu pv on kirjatuissa kyydeissä */
-            days.forEach( d => d.classList.contains('active') ? d.classList.remove('active') : null )
-            days[index].classList.add('active');
-            console.log(day,'is event day', weekdays[indexWeekday]);
-            eventDay.innerHTML = `${weekdays[indexWeekday]}`
-            eventDate.innerHTML = `${day}`
-            events = ""
-            allEvents.innerHTML = ""
-            allRides.forEach((r, rideIndex) => {
-                r.startDay === day
-                ? events += `<div class="calendar-event">
-                <p>${r.startLocation} -> ${r.destination}</p>
-                <p>time: ${r.startTime}</p>
-                <p>cost: ${r.cost}</p>
-                <p><i class="fa-regular fa-user participantCount" dataRideIndex="${rideIndex}"> ${r.participants} </i><button class="joinRideBtn" dataRideIndex="${rideIndex}">join</button></p>
-                </div>`
-                : null
-            })
-            allEvents.innerHTML = events
+                if (joinedRides.includes(ride.id)) { 
+                    let btnE = document.createElement('button');
+                    btnE.innerHTML = 'leave'
+                    btnE.addEventListener('click', () => allRidesUpdater(['leave', ride.id]))
+                    divE.lastChild.appendChild(btnE)
+                 } else {
+                    let btnE = document.createElement('button');
+                    btnE.innerHTML = 'join'
+                    btnE.addEventListener('click', () => allRidesUpdater(['join', ride.id]))
+                    divE.lastChild.appendChild(btnE)
+                 }
 
-            /* Tapahtumakuuntelijat liity painikkeille. Kutsutaan joinRide funktiota kun klikataan eventin liity painiketta. Piilotetaan liity painike tämän jälkeen. */
-            let joinButtons = document.querySelectorAll(".joinRideBtn");
-            joinButtons.forEach((btn) => {
-                btn.addEventListener("click", function()  {
-                    let rideIndex = this.getAttribute("dataRideIndex");
-                    let participantCount = document.querySelector(`.participantCount[dataRideIndex="${rideIndex}"]`);
-                    joinRide(allRides[rideIndex], participantCount, rideIndex);
-                    btn.style.display = "none";
-                    showMyRides();
-                })
-            })
+                allEvents.appendChild(divE)
+            }
         })
-            
-        : days[index].addEventListener('click', () => { /* jos valittu pv ei ole kirjatuissa kyydeissä */
-            days.forEach( d => d.classList.contains('active') ? d.classList.remove('active') : null )
-            days[index].classList.add('active');
-            console.log(day,'is not event day', weekdays[indexWeekday]); 
-            eventDay.innerHTML = `${weekdays[indexWeekday]}`
-            eventDate.innerHTML = `${day}`
-            allEvents.innerHTML = ""
-            allEvents.innerHTML = 'no events'
-        })
-    })
+        : allEvents.innerHTML = 'no events'
+
 }
 
-/* aikaisemman kuukauden hakeminen */
-function prevMonth() {
-    month--; /* nykyinen kuukausi - 1 */
-    if (month < 0) { /* jos kuukausi on alle 0 vaihtuu kuukausi joulukuuhun ja vuosi on - 1 */
+function navPrevMonth () {
+    month--;
+    if (month < 0) {
         month = 11;
         year--;
     }
     initCalendar();
-}
+ }
 
-/* aikaisemman kuukauden hakeminen */
-function nextMonth() {
-    month++; /* nykyinen kuukausi + 1 */
-    if (month > 11) { /* jos kuukausi on yli 11 vaihtuu kuukaus tammikuuksi ja vuosi on + 1 */
+function navNextMonth () { 
+    month++;
+    if (month > 11) {
         month = 0;
         year++;
     }
     initCalendar();
+ }
+
+function navActive (date) { 
+    let days = document.querySelectorAll('.day');
+    days.forEach(d => d.classList.remove('active'));
+    activeDay = date.date
+    initCalendar();
+ }
+
+/* only updating rides data aka allRides */
+function allRidesUpdater(data) {
+    if ( data[0] === 'add' ) { console.log('add'); }
+    if ( data[0] === 'leave' ) { console.log('leave'); }
+    if ( data[0] === 'join' ) { console.log('join'); }
+    initCalendar();
 }
 
-
-/* navigointi edelliseen ja seuraavaan kuukauteen */
-prev.addEventListener('click', prevMonth)
-next.addEventListener('click', nextMonth)
+document.querySelector('.prev').addEventListener('click', () => { navPrevMonth() })
+document.querySelector('.next').addEventListener('click', () => { navNextMonth() })
 
 // KARTTAOSIO
 
@@ -199,15 +232,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 let markers = L.layerGroup();
 markers.addTo(map);
-
-// Esimerkki rekisteröidyistä kyydeistä. Uudet kyydit rekisteröidään tänne
-let allRides = [
-    { id: 1, startLocation: 'Helsinki', destination: 'Turku', cost: '10€', startDay: '20.11.2023', startTime: '08:00', location: [60.1699, 24.9384], participants: 0 },
-    { id: 2, startLocation: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '20.11.2023', startTime: '09:30', location: [61.4978, 23.7610], participants: 0 },
-    { id: 3, startLocation: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startDay: '1.11.2023', startTime: '10:45', location: [62.879, 27.678], participants: 0 },
-    { id: 4, startLocation: 'Pihtipudas', destination: 'Pyhäjärvi', cost: '8€', startDay: '12.11.2023', startTime: '12:15', location: [63.445, 25.766], participants: 0 },
-    { id: 5, startLocation: 'Ylivieska', destination: 'Kempele', cost: 'Free', startDay: '1.12.2023', startTime: '14:00', location: [64.128, 24.547], participants: 0 }
-];
 
 // Kyytien renderöinti kartalle ja taulukkoon
 function renderRides(ride, rideIndex) {
