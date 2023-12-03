@@ -214,8 +214,13 @@ function navActive (date) {
 /* only updating rides data aka allRides */
 function allRidesUpdater(data) {
     if ( data[0] === 'add' ) { console.log('add'); }
-    if ( data[0] === 'leave' ) { console.log('leave'); }
-    if ( data[0] === 'join' ) { console.log('join'); }
+
+    if ( data[0] === 'leave' ) { 
+        let index = joinedRides.indexOf(joinedRides.find(i => i === data[1] ? i : null ));
+        joinedRides.splice(index, 1)
+    }
+
+    if ( data[0] === 'join' ) { joinedRides.push(data[1]) }
     initCalendar();
 }
 
