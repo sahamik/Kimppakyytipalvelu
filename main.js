@@ -142,9 +142,7 @@ function showCarpoolEvents () {
     let allEvents = document.querySelector('.calendar-events'); /* kaikki näytettävät eventit */
 
     let indexDay = activeDay.split('.').map((d) => Number(d))
-    let indexWeekday = activeDay === today /* viikonpäivä */
-        ? new Date(`${indexDay[2]}-${indexDay[1]}-${indexDay[0]}`).getDay()
-        : null
+    let indexWeekday = new Date(`${indexDay[2]}-${indexDay[1]}-${indexDay[0]}`).getDay()
     eventDay.innerHTML = weekdays[indexWeekday]
 
     eventDate.innerHTML = activeDay
