@@ -1,12 +1,12 @@
 let allRides = [
-    { id: 1, startLocation: 'Helsinki', destination: 'Turku', cost: '10€', startDay: '20.12.2023', startTime: '08:00', location: [60.1699, 24.9384], participants: 0, id: 0 },
-    { id: 2, startLocation: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '20.11.2023', startTime: '09:30', location: [61.4978, 23.7610], participants: 1, id: 1 },
-    { id: 3, startLocation: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startDay: '30.11.2023', startTime: '10:45', location: [62.879, 27.678], participants: 0, id: 2 },
-    { id: 4, startLocation: 'Pihtipudas', destination: 'Pyhäjärvi', cost: '8€', startDay: '12.12.2023', startTime: '12:15', location: [63.445, 25.766], participants: 0, id: 3 },
-    { id: 5, startLocation: 'Ylivieska', destination: 'Kempele', cost: 'Free', startDay: '12.12.2023', startTime: '14:00', location: [64.128, 24.547], participants: 1, id: 4 }
+    { id: 1, startLocation: 'Helsinki', destination: 'Turku', cost: '10€', startDay: '20.12.2023', startTime: '08:00', location: [60.1699, 24.9384], participants: 0 },
+    { id: 2, startLocation: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '20.11.2023', startTime: '09:30', location: [61.4978, 23.7610], participants: 1 },
+    { id: 3, startLocation: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startDay: '30.11.2023', startTime: '10:45', location: [62.879, 27.678], participants: 0 },
+    { id: 4, startLocation: 'Pihtipudas', destination: 'Pyhäjärvi', cost: '8€', startDay: '12.12.2023', startTime: '12:15', location: [63.445, 25.766], participants: 0 },
+    { id: 5, startLocation: 'Ylivieska', destination: 'Kempele', cost: 'Free', startDay: '12.12.2023', startTime: '14:00', location: [64.128, 24.547], participants: 1 }
 ];
 
-let joinedRides = [1,4]
+let joinedRides = [2, 5]
 
 /* necessary components for the calendar */
 const  calendar = document.querySelector('.calendar'), /* kalenteri */
@@ -164,12 +164,12 @@ function showCarpoolEvents () {
                 if (joinedRides.includes(ride.id)) { /* jos valittuna päivänä on joinattuja kyytejä on mahdollista leave */
                     let btnE = document.createElement('button');
                     btnE.innerHTML = 'leave'
-                    btnE.addEventListener('click', () => allRidesUpdater(['leave', ride.id]))
+                    btnE.addEventListener('click', () => allRidesUpdater(['leave', ride]))
                     divE.lastChild.appendChild(btnE)
                  } else {  /* jos valittuna päivänä ei ole joinattuja kyytejä on mahdollista join */
                     let btnE = document.createElement('button');
                     btnE.innerHTML = 'join'
-                    btnE.addEventListener('click', () => allRidesUpdater(['join', ride.id]))
+                    btnE.addEventListener('click', () => allRidesUpdater(['join', ride]))
                     divE.lastChild.appendChild(btnE)
                  }
 
@@ -210,14 +210,14 @@ function allRidesUpdater(data) {
     if ( data[0] === 'add' ) { console.log('add'); }
 
     if ( data[0] === 'leave' ) { 
-        let index = joinedRides.indexOf(joinedRides.find(i => i === data[1] ? i : null ));
+        let index = joinedRides.indexOf(joinedRides.find(i => i === data[1].id ? i : null ));
         joinedRides.splice(index, 1)
-        allRides[data[1]].participants -= 1;
+        allRides[data[1].id-1].participants -= 1;
     }
 
     if ( data[0] === 'join' ) { 
-        joinedRides.push(data[1]) 
-        allRides[data[1]].participants += 1;
+        joinedRides.push(data[1].id) 
+        allRides[data[1].id-1].participants += 1;
     }
     initCalendar();
 }
