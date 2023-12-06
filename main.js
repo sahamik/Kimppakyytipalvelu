@@ -235,7 +235,6 @@ function allRidesUpdater(data) {
     localStorage.setItem("allRides", JSON.stringify(storageChange));
     allRides = JSON.parse(localStorage.getItem('allRides')) || [];
     initCalendar();
-    renderRides();
 }
 
 /* kalenterin nuolet < > */
