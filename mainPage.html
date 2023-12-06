@@ -70,53 +70,49 @@
             </div>
         </div>
         
-        <!--Kyytien filteröinti ja karttaosio-->
-        <div class="filter-map-container">
-             <!-- Kyytitaulukon filtteröinti -->
-            <div id="ride-filter-div">
-                <label for="startLocationFilter">Filter by Start Location:</label>
-                <input type="text" id="startLocationFilter" oninput="filterRides()">
-                <button id="reset-filter-button" onclick="resetFilter()">Reset Filter</button>
-            </div>
-            
-            <!-- Karttaosio -->
+        <!-- Karttaosio -->
         
-            <div id="map-container">
-                <div id="map"></div>
-                <div id="locations">
-                    <h2 id="rides-head">Nearby Rides</h2>
-                    <ul id="ride-list">
-                        <p>No nearby rides</p>
-                        <!-- Etsityt kyydit listassa -->
-                    </ul>
-                </div>
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="locations">
+                <h2 id="rides-head">Nearby Rides</h2>
+                <ul id="ride-list">
+                    <p>No nearby rides</p>
+                    <!-- Etsityt kyydit listassa -->
+                </ul>
             </div>
-            <!-- Karttaa klikatessa avautuu modal window UI -->
-            <div id="mapActionModal" class="modal">
-                <div class="modal-content">
-                    <button id="registerActionBtn">Register new ride</button>
-                    <button id="searchActionBtn">Search nearby rides</button>
-                </div>
-            </div>
-            <!-- Toinen modal kyydin rekisteröintiin -->
-            <div id="registerModal" class="modal">
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <label for="startLocation">Start Location:</label>
-                    <input type="text" id="startLocation" placeholder="Enter start location"><br>
-                    <label for="destination">Destination:</label>
-                    <input type="text" id="destination" placeholder="Enter destination"><br>
-                    <label for="cost">Cost:</label>
-                    <input type="text" id="cost" placeholder="Enter cost"><br>
-                    <label for="startDay">Start Day:</label>
-                    <input type="text" id="startDay" placeholder="Enter start Day"><br>
-                    <label for="startTime">Start Time:</label>
-                    <input type="text" id="startTime" placeholder="Enter start time"><br>
-                    <button id="registerBtn">Register Ride</button>
-                </div>
-            </div>
-            
         </div>
+        <!-- Karttaa klikatessa avautuu modal window UI -->
+        <div id="mapActionModal" class="modal">
+            <div class="modal-content">
+                <button id="registerActionBtn">Register new ride</button>
+                <button id="searchActionBtn">Search nearby rides</button>
+            </div>
+        </div>
+        <!-- Toinen modal kyydin rekisteröintiin -->
+        <div id="registerModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <label for="startLocation">Start Location:</label>
+                <input type="text" id="startLocation" placeholder="Enter start location"><br>
+                <label for="destination">Destination:</label>
+                <input type="text" id="destination" placeholder="Enter destination"><br>
+                <label for="cost">Cost:</label>
+                <input type="text" id="cost" placeholder="Enter cost"><br>
+                <label for="startDay">Start Day:</label>
+                <input type="text" id="startDay" placeholder="Enter start Day"><br>
+                <label for="startTime">Start Time:</label>
+                <input type="text" id="startTime" placeholder="Enter start time"><br>
+                <button id="registerBtn">Register Ride</button>
+            </div>
+        </div>           
+    </div>
+    </div>
+    <!-- Kyytitaulukon filtteröinti -->
+    <div id="ride-filter-div">
+        <label for="startLocationFilter">Filter by Start Location:</label>
+        <input type="text" id="startLocationFilter" oninput="filterRides()">
+        <button id="reset-filter-button" onclick="resetFilter()">Reset Filter</button>
     </div>
     
     <!--All rides ja my rides-->
@@ -132,7 +128,7 @@
                         <th>Cost</th>
                         <th>Day</th>
                         <th>Start Time</th>
-                        <th>Partici pants</th>
+                        <th>Participants</th>
                         <th>Join Ride</th>
                         <th>Remove Ride</th>                    
                     </tr>
@@ -144,7 +140,7 @@
         <!-- Omat kyydit -->
         <div id="my-rides-section">
             <h2>My rides</h2>
-            <div id="my-rides">
+            <div class="my-rides">
                 <!--Tähän tulee lista omista kyydeistä-->
             </div>
         </div>
