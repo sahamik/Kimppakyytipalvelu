@@ -364,7 +364,7 @@ header {
     background: linear-gradient(to top, rgb(228, 76, 59),rgb(217, 145, 82));
 }
 
-.join-button {
+.cellBtnJoinLeave {
     margin-left: 10px;
     margin-right: 10px;
     padding: 3px;
@@ -377,7 +377,7 @@ header {
     cursor: pointer;    
 }
 
-.join-button:hover {
+.cellBtnJoinLeave:hover {
     background: linear-gradient(to top, #3e822f, #54ae3f);
 }
 

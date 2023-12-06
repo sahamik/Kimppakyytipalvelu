@@ -1,15 +1,15 @@
 let exampleRides = [
     { id: 0, startLocation: 'Helsinki', destination: 'Turku', cost: '10€', startDay: '20.12.2023', startTime: '08:00', location: [60.1699, 24.9384], participants: 0 },
-    { id: 1, startLocation: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '20.11.2023', startTime: '09:30', location: [61.4978, 23.7610], participants: 1 },
+    { id: 1, startLocation: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '20.11.2023', startTime: '09:30', location: [61.4978, 23.7610], participants: 0 },
     { id: 2, startLocation: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startDay: '30.11.2023', startTime: '10:45', location: [62.879, 27.678], participants: 0 },
     { id: 3, startLocation: 'Pihtipudas', destination: 'Pyhäjärvi', cost: '8€', startDay: '12.12.2023', startTime: '12:15', location: [63.445, 25.766], participants: 0 },
-    { id: 4, startLocation: 'Ylivieska', destination: 'Kempele', cost: 'Free', startDay: '12.12.2023', startTime: '14:00', location: [64.128, 24.547], participants: 1 }
+    { id: 4, startLocation: 'Ylivieska', destination: 'Kempele', cost: 'Free', startDay: '12.12.2023', startTime: '14:00', location: [64.128, 24.547], participants: 0 }
 ];
 
 localStorage.setItem("allRides", JSON.stringify(exampleRides));
-let allRides = JSON.parse(localStorage.getItem('allRides')) || [];
+let allRides = JSON.parse(localStorage.getItem('allRides')) || []; /* asettaa localstoragesta datan allRides muuttujaan */
 
-let joinedRides = [1, 4]
+let joinedRides = JSON.parse(localStorage.getItem('myRides')) || []; /* asettaa localstoragesta datan myRides muuttujaan */
 
 /* necessary components for the calendar */
 const  calendar = document.querySelector('.calendar'), /* kalenteri */
@@ -46,6 +46,7 @@ let today = new Date(),
     year: [${year}]
 `) */
 function initCalendar() {
+
     daysContainer.innerHTML = ''
     currentMonthDates = [];
 
@@ -209,31 +210,40 @@ function navActive (date) { /* asettaa valitun päivän valituksi */
 
 /* only updating rides data aka allRides */
 function allRidesUpdater(data) {
-    let storageChange = JSON.parse(localStorage.getItem("allRides"));
+    let storageChangeAllRides = JSON.parse(localStorage.getItem("allRides")) || []; /* muokattava versio allRides versiosta */
+    let storageChangeMyRides = JSON.parse(localStorage.getItem("myRides")) || []; /* muokattava versio myRides versiosta */
+
+    let joined = joinedRides.includes(data.ride.id)
 
     if ( data.command === 'leave' ) { 
-        let index = joinedRides.indexOf(joinedRides.find(i => i === data.ride.id ? i : null ));
-        joinedRides.splice(index, 1)
+        let index = joinedRides.indexOf(joinedRides.find(i => i === data.ride.id ? i : null )); /* halutun kyydin index joinedRides arrayssa */
+        storageChangeMyRides.splice(index, 1)  /* poistaa halutun kyydin indexin avulla */
 
-        storageChange[data.ride.id].participants -= 1
+        storageChangeAllRides[data.ride.id].participants -= 1 /* muokattavan allRides kyydin participants - 1 */
     }
 
-    if ( data.command === 'join' ) { 
-        joinedRides.push(data.ride.id) 
+    if ( data.command === 'join' && !joined) {
+        storageChangeMyRides.push(data.ride) /* jos kyytiä ei oo jo joinedRides niin push muokattavaan myRides arrayyn */
 
-        storageChange[data.ride.id].participants += 1
+        storageChangeAllRides[data.ride.id].participants += 1 /* muokattavan allRides kyydin participants + 1 */
     }
 
     if ( data.command === 'add' ) {
-        storageChange.push(data.ride)
+        storageChangeAllRides.push(data.ride) /* lisää uuden kyydin muokattavaan allRides arrayyn */
     }
 
     if ( data.command === 'del' ) {
-        storageChange.splice(data.ride.id, 1)
+        storageChangeAllRides.splice(data.ride.id, 1) /* poistaa valitun ride muokattavasta allRides arraysta */
     }
 
-    localStorage.setItem("allRides", JSON.stringify(storageChange));
-    allRides = JSON.parse(localStorage.getItem('allRides')) || [];
+    localStorage.setItem("allRides", JSON.stringify(storageChangeAllRides)); /* asettaa muokatun allRides arrayn localstorageen */
+    allRides = JSON.parse(localStorage.getItem('allRides')) || []; /* kopioi allRides datan allRides array muuttujaan */
+
+    localStorage.setItem("myRides", JSON.stringify(storageChangeMyRides)); /* asettaa muokatun myRides arrayn localstorageen */
+    joinedRides = JSON.parse(localStorage.getItem('myRides')).map(jR => jR.id) || []; /* kopioi myRides datan joinedRides array muuttujaan */
+
+    /* renderöi komponentit uudelleen */
+    allRides.forEach(renderRides);
     initCalendar();
     updateMap();
     showMyRides();
@@ -255,7 +265,7 @@ let markers = L.layerGroup();
 markers.addTo(map);
 
 // Kyytien renderöinti kartalle ja taulukkoon
-function renderRides(ride, rideIndex) {
+function renderRides(ride) {
     let marker = L.marker(ride.location);
     marker.addTo(markers);
     marker.bindPopup(`${ride.startLocation} -> ${ride.destination}, Cost: ${ride.cost}, Start Day: ${ride.startDay}, Start Time: ${ride.startTime}, Participants: ${ride.participants}`);
@@ -280,16 +290,19 @@ function renderRides(ride, rideIndex) {
     cell5.textContent = ride.startTime;
     cell6.textContent = ride.participants;
 
-    // Kyytiin liittymisnapin luokan luominen ja päivitys
+    /* luo buttonin cell7 jolla voi join ja leave riippuen onko renderöitävä kyyti joinedRides */
     cell7.classList.add('join-ride-cell');
-    let joinButton = document.createElement('button');
-    joinButton.className = 'join-button';
-    cell7.appendChild(joinButton);
-    updateJoinButtonState(joinButton, ride, rideIndex);   
-    joinButton.addEventListener('click', function() {
-        joinRideTable(allRides[rideIndex], cell6, rideIndex);
-        updateJoinButtonState(joinButton, allRides[rideIndex], rideIndex);
-    });
+    let cellBtnJoinLeave = document.createElement('button');
+    cellBtnJoinLeave.className = 'cellBtnJoinLeave';
+    cell7.appendChild(cellBtnJoinLeave);
+
+    if (joinedRides.includes(ride.id)){ /* jos renderöitävä kyyti on joinedRides */
+        cellBtnJoinLeave.innerHTML = 'leave'
+        cellBtnJoinLeave.addEventListener('click', () => { allRidesUpdater({ command: 'leave', ride: ride }) }) /* click eventti suoraan allRidesUpdateriin */
+    } else {
+        cellBtnJoinLeave.innerHTML = 'join'
+        cellBtnJoinLeave.addEventListener('click', () => { allRidesUpdater({ command: 'join', ride: ride }) }) /* click eventti suoraan allRidesUpdateriin */
+    }
 
     // Kyydin poistonapin luokan luominen
     cell8.classList.add('remove-ride-cell');
@@ -297,24 +310,11 @@ function renderRides(ride, rideIndex) {
     deleteButton.textContent = 'Delete';
     deleteButton.className = 'delete-button';
     deleteButton.addEventListener('click', function() {
-        allRidesUpdater({ command: 'del', ride: { id: rideIndex } });
+        allRidesUpdater({ command: 'del', ride: ride });
     });
     cell8.appendChild(deleteButton);
 }
 
-// Muuttaa Join napin Leave napiksi ja takaisin
-function updateJoinButtonState(button, ride, rideIndex) {
-    let myRides = JSON.parse(localStorage.getItem("myRides")) || [];
-    let joinedRides = myRides.find((r) => r.rideIndex === rideIndex);
-
-    if (joinedRides) {
-        button.textContent = 'Leave';
-    } else {
-        button.textContent = 'Join';
-    }
-}
-
-// Alustava kyytien merkintä kartalle
 allRides.forEach(renderRides);
 
 // Päivittää listan jossa näkyy lähellä olevat kyydit (Nearby Rides)
@@ -416,7 +416,7 @@ function registerRide() {
     marker.bindPopup(`${startLocation} -> ${destination}, Cost: ${cost}, Start Day: ${startDay}, Start Time: ${startTime}`);
     
     const newRide = {
-        id: allRides.length + 1,
+        id: allRides.length,
         startLocation: startLocation,
         destination: destination,
         cost: cost,
@@ -466,64 +466,6 @@ function searchNearbyRides(coordinates) {
 updateNearbyRideList(rideList);
 }
 
-/* KYYTIIN LIITTYMINEN */
-
-function joinRide(ride, participantCount, rideIndex) {
-    rideIndex = parseInt(rideIndex, 10);   
-    // Tutkitaan onko käyttäjä jo liittynyt kyytiin ja jos on, ei pysty liittymään uudestaan.
-    let myRides = JSON.parse(localStorage.getItem("myRides")) || [];
-    let joinedRides = myRides.find((r) => r.rideIndex === rideIndex);
-
-    if (joinedRides) {
-        participantCount.closest(".calendar-event").insertAdjacentHTML("beforeend", "<p>Olet jo liittynyt tähän kyytiin!</p>");
-        console.log("Olet jo liittynyt tähän kyytiin!");
-        return;
-    } else {
-        // Jos ei ole liittynyt, kasvatetaan osallistujamäärää yhdellä, annetaan ilmoitus kyytiin liittymisestä ja tallennetaan kyyti myRides taulukkoon.
-        ride.participants++;
-
-        participantCount.textContent = `${ride.participants}`;
-        allRides[rideIndex] = ride;
-        console.log("Liitytty kyytiin: ", ride);
-        participantCount.closest(".calendar-event").insertAdjacentHTML("beforeend", "<p>Kyytiin liitytty onnistuneesti</p>");
-
-        myRides.push( {ride: ride, rideIndex: rideIndex });
-        localStorage.setItem("myRides", JSON.stringify(myRides));
-        updateMap();
-    }
-}
-
-// Kyyteihin liittymisen hallinta erikseen kyytilistassa
-function joinRideTable(ride, participantCount, rideIndex) {
-    let myRides = JSON.parse(localStorage.getItem("myRides")) || [];
-    let joinedRides = myRides.find((r) => r.rideIndex === rideIndex);
-    
-    if (joinedRides) {
-        myRides = myRides.filter((r) => r.rideIndex !== rideIndex);
-        localStorage.setItem("myRides", JSON.stringify(myRides));
-        let joinButton = document.querySelector(`.joinRideBtn[dataRideIndex="${rideIndex}"]`);
-        
-        if (joinButton) {
-            joinButton.textContent = "Join";
-        }
-        ride.participants--;
-        participantCount.textContent = `${ride.participants}`;
-    } else {
-        ride.participants++;
-        participantCount.textContent = `${ride.participants}`;
-        allRides[rideIndex] = ride;
-        let joinButton = document.querySelector(`.joinRideBtn[dataRideIndex="${rideIndex}"]`);
-        
-        if (joinButton) {
-            joinButton.textContent = "Leave";
-        }
-        myRides.push( {ride: ride, rideIndex: rideIndex });
-        localStorage.setItem("myRides", JSON.stringify(myRides));
-    }
-    updateMap();
-    showMyRides();
-}
-
 // Omien kyytien näyttäminen
 function showMyRides() {
     let myRides = JSON.parse(localStorage.getItem("myRides")) || [];
@@ -534,7 +476,7 @@ function showMyRides() {
 
     myRides.forEach(r => {
         let rideItem = document.createElement("li");
-        rideItem.textContent = `${r.ride.startLocation} -> ${r.ride.destination} (${r.ride.startTime}), Cost: ${r.ride.cost}`;
+        rideItem.textContent = `${r.startLocation} -> ${r.destination} (${r.startTime}), Cost: ${r.cost}`;
         myRidesList.appendChild(rideItem);
 
         myRidesElement.appendChild(myRidesList);
