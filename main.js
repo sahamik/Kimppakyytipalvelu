@@ -1,12 +1,15 @@
-let allRides = [
-    { id: 1, startLocation: 'Helsinki', destination: 'Turku', cost: '10€', startDay: '20.12.2023', startTime: '08:00', location: [60.1699, 24.9384], participants: 0 },
-    { id: 2, startLocation: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '20.11.2023', startTime: '09:30', location: [61.4978, 23.7610], participants: 1 },
-    { id: 3, startLocation: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startDay: '30.11.2023', startTime: '10:45', location: [62.879, 27.678], participants: 0 },
-    { id: 4, startLocation: 'Pihtipudas', destination: 'Pyhäjärvi', cost: '8€', startDay: '12.12.2023', startTime: '12:15', location: [63.445, 25.766], participants: 0 },
-    { id: 5, startLocation: 'Ylivieska', destination: 'Kempele', cost: 'Free', startDay: '12.12.2023', startTime: '14:00', location: [64.128, 24.547], participants: 1 }
+let exampleRides = [
+    { id: 0, startLocation: 'Helsinki', destination: 'Turku', cost: '10€', startDay: '20.12.2023', startTime: '08:00', location: [60.1699, 24.9384], participants: 0 },
+    { id: 1, startLocation: 'Tampere', destination: 'Hämeenlinna', cost: '15€', startDay: '20.11.2023', startTime: '09:30', location: [61.4978, 23.7610], participants: 1 },
+    { id: 2, startLocation: 'Kuopio', destination: 'Soisalo', cost: 'Gas', startDay: '30.11.2023', startTime: '10:45', location: [62.879, 27.678], participants: 0 },
+    { id: 3, startLocation: 'Pihtipudas', destination: 'Pyhäjärvi', cost: '8€', startDay: '12.12.2023', startTime: '12:15', location: [63.445, 25.766], participants: 0 },
+    { id: 4, startLocation: 'Ylivieska', destination: 'Kempele', cost: 'Free', startDay: '12.12.2023', startTime: '14:00', location: [64.128, 24.547], participants: 1 }
 ];
 
-let joinedRides = [2, 5]
+localStorage.setItem("allRides", JSON.stringify(exampleRides));
+let allRides = JSON.parse(localStorage.getItem('allRides')) || [];
+
+let joinedRides = [1, 4]
 
 /* necessary components for the calendar */
 const  calendar = document.querySelector('.calendar'), /* kalenteri */
@@ -42,7 +45,6 @@ let today = new Date(),
     month: [${month}] => [${months[month]}] index 11 is last month
     year: [${year}]
 `) */
-
 function initCalendar() {
     daysContainer.innerHTML = ''
     currentMonthDates = [];
@@ -164,12 +166,12 @@ function showCarpoolEvents () {
                 if (joinedRides.includes(ride.id)) { /* jos valittuna päivänä on joinattuja kyytejä on mahdollista leave */
                     let btnE = document.createElement('button');
                     btnE.innerHTML = 'leave'
-                    btnE.addEventListener('click', () => allRidesUpdater(['leave', ride]))
+                    btnE.addEventListener('click', () => allRidesUpdater({command: 'leave', ride: ride}))
                     divE.lastChild.appendChild(btnE)
                  } else {  /* jos valittuna päivänä ei ole joinattuja kyytejä on mahdollista join */
                     let btnE = document.createElement('button');
                     btnE.innerHTML = 'join'
-                    btnE.addEventListener('click', () => allRidesUpdater(['join', ride]))
+                    btnE.addEventListener('click', () => allRidesUpdater({command: 'join', ride: ride}))
                     divE.lastChild.appendChild(btnE)
                  }
 
@@ -206,20 +208,34 @@ function navActive (date) { /* asettaa valitun päivän valituksi */
  }
 
 /* only updating rides data aka allRides */
-function allRidesUpdater(data) { 
-    if ( data[0] === 'add' ) { console.log('add'); }
+function allRidesUpdater(data) {
+    let storageChange = JSON.parse(localStorage.getItem("allRides"));
 
-    if ( data[0] === 'leave' ) { 
-        let index = joinedRides.indexOf(joinedRides.find(i => i === data[1].id ? i : null ));
+    if ( data.command === 'leave' ) { 
+        let index = joinedRides.indexOf(joinedRides.find(i => i === data.ride.id ? i : null ));
         joinedRides.splice(index, 1)
-        allRides[data[1].id-1].participants -= 1;
+
+        storageChange[data.ride.id].participants -= 1
     }
 
-    if ( data[0] === 'join' ) { 
-        joinedRides.push(data[1].id) 
-        allRides[data[1].id-1].participants += 1;
+    if ( data.command === 'join' ) { 
+        joinedRides.push(data.ride.id) 
+
+        storageChange[data.ride.id].participants += 1
     }
+
+    if ( data.command === 'add' ) {
+        storageChange.push(data.ride)
+    }
+
+    if ( data.command === 'del' ) {
+        storageChange.splice(data.ride.id, 1)
+    }
+
+    localStorage.setItem("allRides", JSON.stringify(storageChange));
+    allRides = JSON.parse(localStorage.getItem('allRides')) || [];
     initCalendar();
+    renderRides();
 }
 
 /* kalenterin nuolet < > */
@@ -472,8 +488,6 @@ function searchNearbyRides(coordinates) {
 updateNearbyRideList(rideList);
 }
 
-initCalendar() /* kalenterin kutsu kaikkien arvojen kanssa niin saa kirjattua kyydit */
-
 /* KYYTIIN LIITTYMINEN */
 
 function joinRide(ride, participantCount, rideIndex) {
@@ -548,6 +562,8 @@ function showMyRides() {
         myRidesElement.appendChild(myRidesList);
     });
 }
+
+initCalendar()
 
 // Uloskirjautuminen sovelluksesta
 document.getElementById("logOutBtn").addEventListener("click", logOut);
