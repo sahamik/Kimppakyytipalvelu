@@ -235,6 +235,8 @@ function allRidesUpdater(data) {
     localStorage.setItem("allRides", JSON.stringify(storageChange));
     allRides = JSON.parse(localStorage.getItem('allRides')) || [];
     initCalendar();
+    updateMap();
+    showMyRides();
 }
 
 /* kalenterin nuolet < > */
@@ -295,7 +297,7 @@ function renderRides(ride, rideIndex) {
     deleteButton.textContent = 'Delete';
     deleteButton.className = 'delete-button';
     deleteButton.addEventListener('click', function() {
-        deleteRide(rideIndex);
+        allRidesUpdater({ command: 'del', ride: { id: rideIndex } });
     });
     cell8.appendChild(deleteButton);
 }
@@ -310,26 +312,6 @@ function updateJoinButtonState(button, ride, rideIndex) {
     } else {
         button.textContent = 'Join';
     }
-}
-
-// Kyydin poisto allRides, myRides, kartalta ja kalenterista
-function deleteRide(rideIndex) {
-    const deletedRide = allRides[rideIndex];
-    allRides.splice(rideIndex, 1);
-    const myRides = JSON.parse(localStorage.getItem("myRides")) || [];
-    const updatedMyRides = myRides.filter((r) => r.ride.id !== deletedRide.id);
-    localStorage.setItem("myRides", JSON.stringify(updatedMyRides));
-
-    updateMap();
-    const dateCell = document.querySelector(`.day[data-date="${deletedRide.startDay}"]`);
-    if (dateCell) {
-        const carIcon = dateCell.querySelector('.fa-car');
-        if (carIcon) {
-            carIcon.remove();
-        }
-    }
-    initCalendar();
-    showMyRides();
 }
 
 // Alustava kyytien merkintä kartalle
@@ -406,9 +388,7 @@ searchActionBtn.addEventListener('click', function() {
 });
 
 // Modal rekisteröinti nappi, lisää uuden kyydin allRides arrayhin
-registerBtn.addEventListener('click', function() {
-    registerRide()
-});
+registerBtn.addEventListener('click', registerRide);
 
 // Uuden kyydin rekisteröinti
 function registerRide() {
@@ -446,15 +426,14 @@ function registerRide() {
         participants: 0
     };
 
-    allRides.push(newRide);
+    allRidesUpdater({ command: 'add', ride: newRide });
+
     startLocationInput.value = "";
     destinationInput.value = "";
     costInput.value = "";
     startDayInput.value = "";
     startTimeInput.value = "";
     registerModal.style.display = 'none';
-    updateMap();
-    initCalendar();
 };
 
 // updateMap() voi käyttää aina kun tarvitsee päivittää kyytitaulukkoa
