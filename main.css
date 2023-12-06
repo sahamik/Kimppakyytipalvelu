@@ -18,20 +18,83 @@
     text-decoration: none;
   }
 
+   /* HEADER TYYLIT */
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    font-size: 0.6rem;
+    border-bottom: 2px solid #449133;
+    background: linear-gradient(to right, #73e05b, #459333);
+    width: 100%;
+    height: 80px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.header-content h1 {
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 40px;
+    font-size: 35px;
+    cursor: default;
+}
+
+.header-content nav {
+    margin-left: auto;
+    margin-right: 100px;
+    font-size: 1.2rem;
+    text-decoration: underline;
+}
+
+.header-content a {
+    margin-right: 20px;
+   
+}
+
+.header-content a:hover {
+    color: #4c4c4c;
+   
+}
+.header-content nav:hover {
+    color: #4c4c4c;
+   
+}
+
+.main-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-top: 50px;
+}
+
+
 /* BIG CALENDAR STYLE STARTS*/
 .calendar-container {
     background-color:var(--bg-clr);
     border-radius: 10px;
-    width: 700px;
+    width: 300px;
 
     position: relative;
-    display: flex;
-    margin: 10px;
+    display: block;
+    margin: 20px;
+    margin-left: 40px;
 }
 
 .calendar-container > .calendar {
-    width: 400px;
-    height: 100%;
+    width: 300px;
+    height: 50%;
     background-color: #fff;
 
     border: 1px solid var(--primary-clr);
@@ -192,17 +255,11 @@
 }
 /* CARPOOL NOTES ENDS */
 
-/* Omat kyydit tyylit */
-
-.my-rides-container {
-    display: block;
-    position: relative;
-    float: right;
-}
 
 /* Kartta tyylit */
 
 #map-container {
+    margin-top: 10px;
     display: flex;
     justify-content: space-between;
 }
@@ -211,11 +268,12 @@
     border: solid;
     border-width: 3px;
     border-color: #69D84f;
-    margin: 10px;
-    margin-top: 20px;
-    max-width: 600px;
-    width: 100%;
-    flex: 1;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+    width: 635px;
+    height: 635px;
 }
 
 #locations {
@@ -225,6 +283,7 @@
 
 #rides-head {
     padding: 10px;
+    cursor: default;
 }
 
 #ride-list {
@@ -233,18 +292,25 @@
     padding: 10px;
     max-width: fit-content;
     border-color: #69D84f;
+    border-radius: 10px;
+}
+
+#ride-list-all {
+   margin-top: 50px;
+   margin-left: 40px;
+   max-height: 250px;
+   cursor: default;
 }
 
 #ride-table {
-    width: 80%;
     border-collapse: collapse;
     margin-top: 20px;
-    margin-left: 10px;
+    height: 100%;
 }
 
 #ride-table th, #ride-table td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 4px;
     text-align: left;
 }
 
@@ -257,8 +323,9 @@
 }
 
 #ride-filter-div {
-    margin: 10px;
     margin-top: 20px;
+    margin-left: 40px;
+    margin-right: 20px;
 }
 
 #reset-filter-button {
@@ -278,6 +345,7 @@
 
 .delete-button {
     margin-left: 10px;
+    margin-right: 10px;
     padding: 3px;
     width: 90px;
     border-radius: 5px;
@@ -294,6 +362,7 @@
 
 .join-button {
     margin-left: 10px;
+    margin-right: 10px;
     padding: 3px;
     width: 90px;
     border-radius: 5px;
@@ -388,20 +457,142 @@
     cursor: pointer;
 }
 
+.bottom-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+#ride-list-all, #my-rides-section {
+    width: calc(50% - 10%);
+    cursor: default;
+}
+
+/* Omat kyydit tyylit */
+
+#my-rides-section {
+    display: block;
+    margin-top: 50px;
+    margin-right: 60px;
+    margin-bottom: 100px;
+}
+
+.my-rides {
+    padding: 10px;
+    margin-top: 20px;
+    border: 1px solid #2E2E2E;
+    width: 500px;
+    height: 250px;
+    overflow: scroll;
+}
+
 /* Tyylit uloskirjautumis painikkeelle */
 
 #logOutBtn {
-    position:absolute;
-    right: 10px;
-    top: 5px;
-    border-radius: 8px;
+    margin-right: 20px;
+    margin-bottom: 5px;
+    padding: 10px;
+    border-radius: 5px;
     border: solid;
-    border-color: #4a9b38;
-    background: var(--primary-clr);
-    padding: 2px;
+    border-color: #472719;
+    background: linear-gradient(to top, rgb(209, 119, 109),rgb(205, 166, 132));
+    font-weight: bold;
     cursor: pointer;
 }
 
 #logOutBtn:hover {
-    background: linear-gradient(to top, #4a9b38, #69D84f);
+    background: linear-gradient(to top, rgb(228, 76, 59),rgb(217, 145, 82));
+}
+
+/* Footer tyylit */
+
+footer {
+    position: absolute;
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(to right, #73e05b, #459333);
+    border-top: 2px solid #449133;
+}
+
+footer p {
+    text-align: center;
+    margin-top: 25px;
+}
+
+/* TYYLIT PIENEMMILLE NÄYTÖILLE */
+
+@media screen and (max-width: 768px) {
+    
+    header {
+        height: auto;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .header-content {
+        flex-direction: column;
+        align-items: center;
+        margin-right: 0;
+    }
+
+    .header-content h1 {
+        margin-left: 0;
+        text-align: center;
+    }
+
+    .header-content nav {
+        margin: 10px;
+        text-align: center;
+    }
+
+    #logOutBtn {
+        position: absolute;
+        margin-top: 60px;
+        right: 0;
+    }
+
+    .main-container {
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .calendar-container {
+        display: flex;
+        width: 600px;
+        margin-left: 20px;
+    }
+
+    #map {
+        width: 330px;
+        height: 500px;
+        margin: 10px 0;
+        margin-left: 20px;
+    }
+
+    #locations {
+        width: 100%;
+        margin: 0 20px;
+    }
+
+    #ride-filter-div {
+        margin: 20px 0;
+        margin-left: 20px;
+    }
+
+    .bottom-container {
+        display: block;
+    }
+
+    #my-rides-section {
+        margin-left: 60px;
+    }
+
+    #my-rides {
+        width: 635px;
+    }
+
+    #footer {
+        width: 100%;
+    }
 }

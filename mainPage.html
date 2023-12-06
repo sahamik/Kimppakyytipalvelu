@@ -10,94 +10,103 @@
     <title>Kimppakyytipalvelu</title>
 </head>
 <body>
-    <div class="calendar-container"> <!-- kalenterin pohja -->
-        <div class="calendar">
-            <div class="month"> <!-- kuukauden navigointi -->
-                <i class="fa fa-angle-left prev"></i>
-                <div class="date"><!-- funktio initCalendar päivittää kuukauden ja vuoden --></div>
-                <i class="fa fa-angle-right next"></i>
-            </div>
-            <div class="weekdays">
-                <div class="weekday">mon</div>
-                <div class="weekday">tue</div>
-                <div class="weekday">wed</div>
-                <div class="weekday">thu</div>
-                <div class="weekday">fri</div>
-                <div class="weekday">sat</div>
-                <div class="weekday">sun</div>
-            </div>
-            <div class="days">
-                <!-- 
-                    funktio initCalendar päivittää päivät
 
-                    classes:
-                    day, 
-                    today, 
-                    prev-date,
-                    next-date,
-                    active, 
-                    car-icon: fa-solid fa-car
-                 -->
-            </div>
+    <!--Header-->
+    <header>
+        <div class="header-content">
+            <h1>KIMPPAKYYTIPALVELU</h1>
+            <nav>
+                <a href="#ride-list-all">All Rides</a>
+                <a href="#my-rides-section">My Rides</a>
+            </nav>
+            <!--Uloskirjautumis painike-->
+            <button id="logOutBtn">Log out</button>
         </div>
-        <div class="carpoolNotes">
-            <div class="notes-nav">
-                <div class="today-date">
-                    <div class="event-day"><!-- function getActiveDay --></div>
-                    <div class="event-date"><!-- function getActiveDay --></div>
+    </header>
+
+    <!--Kalenteri ja eventit-->
+    <div class="main-container">
+        <div class="calendar-container"> <!-- kalenterin pohja -->
+            <div class="calendar">
+                <div class="month"> <!-- kuukauden navigointi -->
+                    <i class="fa fa-angle-left prev"></i>
+                    <div class="date"><!-- funktio initCalendar päivittää kuukauden ja vuoden --></div>
+                    <i class="fa fa-angle-right next"></i>
+                </div>
+                <div class="weekdays">
+                    <div class="weekday">mon</div>
+                    <div class="weekday">tue</div>
+                    <div class="weekday">wed</div>
+                    <div class="weekday">thu</div>
+                    <div class="weekday">fri</div>
+                    <div class="weekday">sat</div>
+                    <div class="weekday">sun</div>
+                </div>
+                <div class="days">
+                    <!-- 
+                        funktio initCalendar päivittää päivät
+    
+                        classes:
+                        day, 
+                        today, 
+                        prev-date,
+                        next-date,
+                        active, 
+                        car-icon: fa-solid fa-car
+                     -->
                 </div>
             </div>
-
-            <div class="calendar-events">
-                <!-- <div class="calendar-event"> kyytitiedot <i class="fa-regular fa-user"> 0 </i></div> -->
+            <div class="carpoolNotes">
+                <div class="notes-nav">
+                    <div class="today-date">
+                        <div class="event-day"><!-- function getActiveDay --></div>
+                        <div class="event-date"><!-- function getActiveDay --></div>
+                    </div>
+                </div>
+    
+                <div class="calendar-events">
+                    <!-- <div class="calendar-event"> kyytitiedot <i class="fa-regular fa-user"> 0 </i></div> -->
+                </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Omat kyydit -->
-
-    <div class="my-rides-container">
-        <h2>My rides</h2>
-        <div class="my-rides">
-            <!--Tähän tulee lista omista kyydeistä-->
+        
+        <!-- Karttaosio -->
+        
+        <div id="map-container">
+            <div id="map"></div>
+            <div id="locations">
+                <h2 id="rides-head">Nearby Rides</h2>
+                <ul id="ride-list">
+                    <p>No nearby rides</p>
+                    <!-- Etsityt kyydit listassa -->
+                </ul>
+            </div>
         </div>
-    </div>
-    
-    <!-- Karttaosio -->
-
-    <div id="map-container">
-        <div id="map" style="height: 600px;"></div>
-        <div id="locations">
-            <h2 id="rides-head">Nearby Rides</h2>
-            <ul id="ride-list">
-                <p>No nearby rides</p>
-                <!-- Etsityt kyydit listassa -->
-            </ul>
+        <!-- Karttaa klikatessa avautuu modal window UI -->
+        <div id="mapActionModal" class="modal">
+            <div class="modal-content">
+                <button id="registerActionBtn">Register new ride</button>
+                <button id="searchActionBtn">Search nearby rides</button>
+            </div>
         </div>
+        <!-- Toinen modal kyydin rekisteröintiin -->
+        <div id="registerModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <label for="startLocation">Start Location:</label>
+                <input type="text" id="startLocation" placeholder="Enter start location"><br>
+                <label for="destination">Destination:</label>
+                <input type="text" id="destination" placeholder="Enter destination"><br>
+                <label for="cost">Cost:</label>
+                <input type="text" id="cost" placeholder="Enter cost"><br>
+                <label for="startDay">Start Day:</label>
+                <input type="text" id="startDay" placeholder="Enter start Day"><br>
+                <label for="startTime">Start Time:</label>
+                <input type="text" id="startTime" placeholder="Enter start time"><br>
+                <button id="registerBtn">Register Ride</button>
+            </div>
+        </div>           
     </div>
-    <!-- Karttaa klikatessa avautuu modal window UI -->
-    <div id="mapActionModal" class="modal">
-        <div class="modal-content">
-            <button id="registerActionBtn">Register new ride</button>
-            <button id="searchActionBtn">Search nearby rides</button>
-        </div>
-    </div>
-    <!-- Toinen modal kyydin rekisteröintiin -->
-    <div id="registerModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <label for="startLocation">Start Location:</label>
-            <input type="text" id="startLocation" placeholder="Enter start location"><br>
-            <label for="destination">Destination:</label>
-            <input type="text" id="destination" placeholder="Enter destination"><br>
-            <label for="cost">Cost:</label>
-            <input type="text" id="cost" placeholder="Enter cost"><br>
-            <label for="startDay">Start Day:</label>
-            <input type="text" id="startDay" placeholder="Enter start Day"><br>
-            <label for="startTime">Start Time:</label>
-            <input type="text" id="startTime" placeholder="Enter start time"><br>
-            <button id="registerBtn">Register Ride</button>
-        </div>
     </div>
     <!-- Kyytitaulukon filtteröinti -->
     <div id="ride-filter-div">
@@ -105,26 +114,42 @@
         <input type="text" id="startLocationFilter" oninput="filterRides()">
         <button id="reset-filter-button" onclick="resetFilter()">Reset Filter</button>
     </div>
-    <div id="ride-list-all">
-        <!-- Kaikki kyydit -->
-        <table id="ride-table">
-            <thead>
-                <tr>
-                    <th>Start Location</th>
-                    <th>Destination</th>
-                    <th>Cost</th>
-                    <th>Day</th>
-                    <th>Start Time</th>
-                    <th>Participants</th>
-                    <th>Join Ride</th>
-                    <th>Remove Ride</th>                    
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+    
+    <!--All rides ja my rides-->
+    <div class="bottom-container">
+        <div id="ride-list-all">
+            <h2>All rides</h2>
+            <!-- Kaikki kyydit -->
+            <table id="ride-table">
+                <thead>
+                    <tr>
+                        <th>Start Location</th>
+                        <th>Destination</th>
+                        <th>Cost</th>
+                        <th>Day</th>
+                        <th>Start Time</th>
+                        <th>Participants</th>
+                        <th>Join Ride</th>
+                        <th>Remove Ride</th>                    
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    
+        <!-- Omat kyydit -->
+        <div id="my-rides-section">
+            <h2>My rides</h2>
+            <div class="my-rides">
+                <!--Tähän tulee lista omista kyydeistä-->
+            </div>
+        </div>
     </div>
-    <!--Uloskirjautumis painike-->
-    <button id="logOutBtn">Log out</button>
+    
+    <!--Footer-->
+    <footer>
+        <p>Copyright @Example</p>
+    </footer>
 
     <script src="./main.js"></script>
 </body>
