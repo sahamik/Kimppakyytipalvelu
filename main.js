@@ -46,7 +46,6 @@ let today = new Date(),
     year: [${year}]
 `) */
 function initCalendar() {
-
     daysContainer.innerHTML = ''
     currentMonthDates = [];
 
@@ -213,19 +212,17 @@ function allRidesUpdater(data) {
     let storageChangeAllRides = JSON.parse(localStorage.getItem("allRides")) || []; /* muokattava versio allRides versiosta */
     let storageChangeMyRides = JSON.parse(localStorage.getItem("myRides")) || []; /* muokattava versio myRides versiosta */
 
-    let joined = joinedRides.includes(data.ride.id)
+    let allRidesIndex = allRides.indexOf(allRides.find(ride => ride.id === data.ride.id)); /* etsii allRides index jota painettu */
+    let myRidesIndex = joinedRides.indexOf(joinedRides.find(i => i === data.ride.id)); /* etsii joinedRide index jota painettu */
 
     if ( data.command === 'leave' ) { 
-        let index = joinedRides.indexOf(joinedRides.find(i => i === data.ride.id ? i : null )); /* halutun kyydin index joinedRides arrayssa */
-        storageChangeMyRides.splice(index, 1)  /* poistaa halutun kyydin indexin avulla */
-
-        storageChangeAllRides[data.ride.id].participants -= 1 /* muokattavan allRides kyydin participants - 1 */
+        storageChangeMyRides.splice(myRidesIndex, 1) /* poistaa valitun ride muokattavasta myRides arraysta */
+        storageChangeAllRides[allRidesIndex].participants -= 1 /* vähentää halutusta kyydistä participants - 1 */
     }
 
-    if ( data.command === 'join' && !joined) {
-        storageChangeMyRides.push(data.ride) /* jos kyytiä ei oo jo joinedRides niin push muokattavaan myRides arrayyn */
-
-        storageChangeAllRides[data.ride.id].participants += 1 /* muokattavan allRides kyydin participants + 1 */
+    if ( data.command === 'join') {
+        storageChangeMyRides.push(data.ride) /* lisää valitun kyydin muokattavaan myRides arrayyn */
+        storageChangeAllRides[allRidesIndex].participants += 1 /* muokattavan allRides kyydin participants + 1 */
     }
 
     if ( data.command === 'add' ) {
@@ -233,7 +230,8 @@ function allRidesUpdater(data) {
     }
 
     if ( data.command === 'del' ) {
-        storageChangeAllRides.splice(data.ride.id, 1) /* poistaa valitun ride muokattavasta allRides arraysta */
+        storageChangeAllRides.splice(allRidesIndex, 1) /* poistaa valitun ride muokattavasta allRides arraysta */
+        storageChangeMyRides.splice(myRidesIndex, 1) /* poistaa valitun ride muokattavasta myRides arraysta */
     }
 
     localStorage.setItem("allRides", JSON.stringify(storageChangeAllRides)); /* asettaa muokatun allRides arrayn localstorageen */
