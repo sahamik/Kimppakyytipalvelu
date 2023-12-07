@@ -309,7 +309,6 @@ header {
 #ride-table {
     border-collapse: collapse;
     margin-top: 20px;
-    height: 100%;
 }
 
 #ride-table th, #ride-table td {
